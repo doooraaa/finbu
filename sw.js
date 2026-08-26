@@ -1,9 +1,10 @@
-const CACHE_NAME = 'fambu-shell-v79';
+const CACHE_NAME = 'fambu-shell-v90';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
+  './db.js',
   './manifest.webmanifest',
   './assets/brand-icon.svg',
   './assets/icon-192.png',
@@ -12,7 +13,17 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.all(
+        ASSETS.map((asset) =>
+          cache.add(asset).catch((error) => {
+            console.warn('FamBu cache skipped', asset, error);
+          })
+        )
+      )
+    )
+  );
   self.skipWaiting();
 });
 
@@ -37,4 +48,3 @@ self.addEventListener('fetch', (event) => {
       .catch(() => caches.match(event.request))
   );
 });
-

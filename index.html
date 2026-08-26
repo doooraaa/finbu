@@ -38,12 +38,12 @@
 
           <div class="date-range-wrap">
             <div class="date-range" aria-label="Диапазон дат">
-              <button class="is-active" type="button">Этот месяц</button>
-              <button type="button">Сегодня</button>
-              <button type="button">Вчера</button>
-              <button type="button">7 дней</button>
-              <button type="button">30 дней</button>
-              <button type="button">Все время</button>
+              <button class="is-active" type="button" data-action="select-period" data-period="thisMonth">Этот месяц</button>
+              <button type="button" data-action="select-period" data-period="today">Сегодня</button>
+              <button type="button" data-action="select-period" data-period="yesterday">Вчера</button>
+              <button type="button" data-action="select-period" data-period="7d">7 дней</button>
+              <button type="button" data-action="select-period" data-period="30d">30 дней</button>
+              <button type="button" data-action="select-period" data-period="all">Все время</button>
               <button type="button" data-action="toggle-range-calendar">Свой период</button>
             </div>
             <div class="choice-menu calendar-menu range-calendar" id="rangeCalendar" hidden>
@@ -62,19 +62,19 @@
           <section class="grid stats" aria-label="Финансовая сводка">
             <article class="card stat-card">
               <span class="label">Баланс</span>
-              <div class="value">248 500 ₽</div>
+              <div class="value" data-summary="balance">248 500 ₽</div>
             </article>
             <article class="card stat-card">
               <span class="label">Доходы</span>
-              <div class="value green">312 000 ₽</div>
+              <div class="value green" data-summary="income">312 000 ₽</div>
             </article>
             <article class="card stat-card">
               <span class="label">Расходы</span>
-              <div class="value rose">125 580 ₽</div>
+              <div class="value rose" data-summary="expense">125 580 ₽</div>
             </article>
             <article class="card stat-card">
               <span class="label">Свободно</span>
-              <div class="value teal">37 400 ₽</div>
+              <div class="value teal" data-summary="free">37 400 ₽</div>
             </article>
           </section>
 
@@ -84,12 +84,28 @@
                 <b>Ближайшие платежи</b>
                 <span class="badge">2 недели</span>
               </div>
-              <div class="payment is-urgent"><span>Ипотека</span><b>45 000 ₽</b><small>4 августа · Данил</small></div>
-              <div class="payment is-warning"><span>Кредитная карта</span><b>21 300 ₽</b><small>7 августа · Данил</small></div>
-              <div class="payment"><span>Интернет</span><b>1 200 ₽</b><small>9 августа · Юля</small></div>
-              <div class="payment"><span>Детский сад</span><b>8 000 ₽</b><small>12.08 · Юля</small></div>
+              <div id="upcomingPaymentsList">
+                <div class="payment is-urgent"><span>Ипотека</span><b>45 000 ₽</b><small>4 августа · Данил</small></div>
+                <div class="payment is-warning"><span>Кредитная карта</span><b>21 300 ₽</b><small>7 августа · Данил</small></div>
+                <div class="payment"><span>Интернет</span><b>1 200 ₽</b><small>9 августа · Юля</small></div>
+                <div class="payment"><span>Детский сад</span><b>8 000 ₽</b><small>12.08 · Юля</small></div>
+              </div>
+              <div class="ui-state empty-state" id="upcomingPaymentsEmpty" hidden><b>Ближайших платежей нет</b><small>Все обязательные платежи оплачены или не запланированы.</small></div>
               <div class="payment-legend"><span><i class="legend-dot rose-bg"></i>&lt; 3 дня</span><span><i class="legend-dot amber-bg"></i>&lt; 7 дней</span><span><i class="legend-dot neutral-bg"></i>7+ дней</span></div>
               <button class="ghost-button dashboard-link-button" type="button" data-action="show-screen" data-screen="recurring">Все платежи</button>
+            </article>
+
+            <article class="card">
+              <div class="between">
+                <b>Напоминания</b>
+                <span class="badge">Этот месяц</span>
+              </div>
+              <div id="dashboardRemindersList">
+                <div class="payment is-warning"><span>Оплатить интернет</span><b>25 августа</b><small>Каждый месяц · Юля</small></div>
+                <div class="payment"><span>Сверить семейный бюджет</span><b>30 августа</b><small>Каждую неделю · Оба</small></div>
+              </div>
+              <div class="ui-state empty-state" id="dashboardRemindersEmpty" hidden><b>Напоминаний нет</b><small>На этот месяц ничего не запланировано.</small></div>
+              <button class="ghost-button dashboard-link-button" type="button" data-action="show-screen" data-screen="reminders">Все напоминания</button>
             </article>
 
             <section class="card insights-widget" data-insights-slider aria-label="Инсайты">
@@ -102,17 +118,17 @@
               </div>
               <div class="insights-viewport">
                 <div class="insights-track">
-                  <article class="insight-slide is-active" data-insight-slide>
+                  <article class="insight-slide is-active" data-insight-slide data-insight-key="upcoming">
                     <span class="insight-kicker">Предстоящие платежи</span>
-                    <strong>20 400 ₽</strong>
-                    <p>3 обязательных платежа в этом месяце</p>
-                    <small>В ближайшие 2 недели: 17 400 ₽</small>
+                    <strong data-insight="upcoming-total">20 400 ₽</strong>
+                    <p data-insight="upcoming-count">3 обязательных платежа в этом месяце</p>
+                    <small data-insight="upcoming-soon">В ближайшие 2 недели: 17 400 ₽</small>
                   </article>
-                  <article class="insight-slide insight-slide-food" data-insight-slide>
+                  <article class="insight-slide insight-slide-food" data-insight-slide data-insight-key="topCategory">
                     <span class="insight-kicker">Основная категория расходов</span>
-                    <strong>18 450 ₽</strong>
-                    <p>34% всех расходов</p>
-                    <small>Категория <b>Еда</b></small>
+                    <strong data-insight="top-category-amount">18 450 ₽</strong>
+                    <p data-insight="top-category-percent">34% всех расходов</p>
+                    <small>Категория <b data-insight="top-category-name">Еда</b></small>
                   </article>
                 </div>
               </div>
@@ -123,21 +139,14 @@
               <div class="ui-state empty-state insights-empty" hidden><b>Инсайтов пока нет</b><small>Когда появятся важные финансовые события, они будут показаны здесь.</small></div>
             </section>
 
-            <article class="card operations">
+            <article class="card operations" id="recentOperationsCard">
               <div class="between">
                 <b>Последние операции</b>
               </div>
-              <div class="operation">
+              <div class="ui-state empty-state operations-empty" hidden><b>Операций пока нет</b><small>Добавьте первую операцию через кнопку «+».</small></div>
+              <div class="operation" data-operation-template hidden>
                 <span><span class="operation-title">Зарплата → <span class="owner-name owner-danil">Данил</span></span><strong class="green">+6 500 ₽</strong></span>
                 <small>сегодня</small>
-              </div>
-              <div class="operation">
-                <span><span class="operation-title">Продукты → <span class="owner-name owner-yulia">Юля</span></span><strong class="rose">−8 450 ₽</strong></span>
-                <small>вчера</small>
-              </div>
-              <div class="operation">
-                <span><span class="operation-title">Аренда → <span class="owner-name owner-danil">Данил</span></span><strong class="rose">−45 000 ₽</strong></span>
-                <small>12.09</small>
               </div>
               <button class="ghost-button dashboard-link-button" type="button" data-action="show-stats-operations">Все операции</button>
             </article>
@@ -154,12 +163,12 @@
 
         <div class="date-range-wrap page-range-wrap">
           <div class="date-range page-range" aria-label="Период доходов">
-            <button class="is-active" type="button">Этот месяц</button>
-            <button type="button">Сегодня</button>
-            <button type="button">Вчера</button>
-            <button type="button">7 дней</button>
-            <button type="button">30 дней</button>
-            <button type="button">Все время</button>
+            <button class="is-active" type="button" data-action="select-period" data-period="thisMonth">Этот месяц</button>
+            <button type="button" data-action="select-period" data-period="today">Сегодня</button>
+            <button type="button" data-action="select-period" data-period="yesterday">Вчера</button>
+            <button type="button" data-action="select-period" data-period="7d">7 дней</button>
+            <button type="button" data-action="select-period" data-period="30d">30 дней</button>
+            <button type="button" data-action="select-period" data-period="all">Все время</button>
             <button type="button" data-action="toggle-page-range-calendar" data-calendar="incomeRangeCalendar">Свой диапазон</button>
           </div>
           <div class="choice-menu calendar-menu range-calendar page-calendar" id="incomeRangeCalendar" data-page-range-calendar hidden>
@@ -178,12 +187,12 @@
         <section class="grid page-stats" aria-label="Сводка доходов">
           <article class="card stat-card">
             <span class="label">Всего за выбранный период</span>
-            <div class="value green">312 000 ₽</div>
+            <div class="value green" data-page-total="income">312 000 ₽</div>
           </article>
           <article class="card stat-card">
             <span class="label">Крупнейшая категория</span>
-            <div class="value">Зарплата</div>
-            <small class="muted">78% всех поступлений</small>
+            <div class="value" data-top-category-name="income">Зарплата</div>
+            <small class="muted" data-top-category-detail="income">78% всех поступлений</small>
           </article>
         </section>
 
@@ -193,33 +202,35 @@
               <b>По категориям</b>
               <span class="badge green">Доходы</span>
             </div>
-            <div class="category-row">
-              <div><b>Зарплата</b><small>Данил и Юля</small></div>
-              <strong>243 000 ₽</strong>
-              <span class="meter"><i style="width:78%"></i></span>
-            </div>
-            <div class="category-row">
-              <div><b>Фриланс</b><small>4 операции</small></div>
-              <strong>48 000 ₽</strong>
-              <span class="meter"><i style="width:15%"></i></span>
-            </div>
-            <div class="category-row">
-              <div><b>Подарки</b><small>2 операции</small></div>
-              <strong>21 000 ₽</strong>
-              <span class="meter"><i style="width:7%"></i></span>
+            <div data-category-rows="income">
+              <div class="category-row">
+                <div><b>Зарплата</b><small>Данил и Юля</small></div>
+                <strong>243 000 ₽</strong>
+                <span class="meter"><i style="width:78%"></i></span>
+              </div>
+              <div class="category-row">
+                <div><b>Фриланс</b><small>4 операции</small></div>
+                <strong>48 000 ₽</strong>
+                <span class="meter"><i style="width:15%"></i></span>
+              </div>
+              <div class="category-row">
+                <div><b>Подарки</b><small>2 операции</small></div>
+                <strong>21 000 ₽</strong>
+                <span class="meter"><i style="width:7%"></i></span>
+              </div>
             </div>
           </article>
 
           <article class="card">
             <div class="toolbar">
               <label class="search-field">
-                <span>Поиск</span>
-                <input type="search" placeholder="Найти доход">
+                <span><span class="sr-only">Поиск</span></span>
+                <input type="search" placeholder="Найти доход" id="incomesSearchInput">
               </label>
-              <button class="ghost-button" type="button">Фильтр</button>
+              <button class="ghost-button" type="button" data-action="cycle-owner-filter" data-scope="income" id="incomesFilterButton">Фильтр: Все</button>
             </div>
 
-            <div class="record-list">
+            <div class="record-list" data-record-list="income">
               <div class="record">
                 <div><b>Зарплата → Данил</b><small>Основная · сегодня</small></div>
                 <strong class="green">+180 000 ₽</strong>
@@ -246,7 +257,7 @@
               </div>
             </div>
 
-            <div class="ui-state">
+            <div class="ui-state" data-empty-state="income" hidden>
               <b>Доходов пока нет</b>
               <small>Когда за выбранный период появятся поступления, они будут отображаться здесь.</small>
             </div>
@@ -263,12 +274,12 @@
 
         <div class="date-range-wrap page-range-wrap">
           <div class="date-range page-range" aria-label="Период расходов">
-            <button class="is-active" type="button">Этот месяц</button>
-            <button type="button">Сегодня</button>
-            <button type="button">Вчера</button>
-            <button type="button">7 дней</button>
-            <button type="button">30 дней</button>
-            <button type="button">Все время</button>
+            <button class="is-active" type="button" data-action="select-period" data-period="thisMonth">Этот месяц</button>
+            <button type="button" data-action="select-period" data-period="today">Сегодня</button>
+            <button type="button" data-action="select-period" data-period="yesterday">Вчера</button>
+            <button type="button" data-action="select-period" data-period="7d">7 дней</button>
+            <button type="button" data-action="select-period" data-period="30d">30 дней</button>
+            <button type="button" data-action="select-period" data-period="all">Все время</button>
             <button type="button" data-action="toggle-page-range-calendar" data-calendar="expenseRangeCalendar">Свой диапазон</button>
           </div>
           <div class="choice-menu calendar-menu range-calendar page-calendar" id="expenseRangeCalendar" data-page-range-calendar hidden>
@@ -287,12 +298,12 @@
         <section class="grid page-stats" aria-label="Сводка расходов">
           <article class="card stat-card">
             <span class="label">Всего за выбранный период</span>
-            <div class="value rose">125 580 ₽</div>
+            <div class="value rose" data-page-total="expense">125 580 ₽</div>
           </article>
           <article class="card stat-card">
             <span class="label">Крупнейшая категория</span>
-            <div class="value">Дом</div>
-            <small class="muted">42% всех расходов</small>
+            <div class="value" data-top-category-name="expense">Дом</div>
+            <small class="muted" data-top-category-detail="expense">42% всех расходов</small>
           </article>
         </section>
 
@@ -302,33 +313,35 @@
               <b>Статистика по категориям</b>
               <span class="badge rose">Расходы</span>
             </div>
-            <div class="category-row">
-              <div><b>Дом</b><small>Аренда, коммунальные</small></div>
-              <strong>53 200 ₽</strong>
-              <span class="meter rose-meter"><i style="width:42%"></i></span>
-            </div>
-            <div class="category-row">
-              <div><b>Еда</b><small>18 операций</small></div>
-              <strong>34 850 ₽</strong>
-              <span class="meter rose-meter"><i style="width:28%"></i></span>
-            </div>
-            <div class="category-row">
-              <div><b>Транспорт</b><small>9 операций</small></div>
-              <strong>18 700 ₽</strong>
-              <span class="meter rose-meter"><i style="width:15%"></i></span>
+            <div data-category-rows="expense">
+              <div class="category-row">
+                <div><b>Дом</b><small>Аренда, коммунальные</small></div>
+                <strong>53 200 ₽</strong>
+                <span class="meter rose-meter"><i style="width:42%"></i></span>
+              </div>
+              <div class="category-row">
+                <div><b>Еда</b><small>18 операций</small></div>
+                <strong>34 850 ₽</strong>
+                <span class="meter rose-meter"><i style="width:28%"></i></span>
+              </div>
+              <div class="category-row">
+                <div><b>Транспорт</b><small>9 операций</small></div>
+                <strong>18 700 ₽</strong>
+                <span class="meter rose-meter"><i style="width:15%"></i></span>
+              </div>
             </div>
           </article>
 
           <article class="card">
             <div class="toolbar">
               <label class="search-field">
-                <span>Поиск</span>
-                <input type="search" placeholder="Найти расход">
+                <span><span class="sr-only">Поиск</span></span>
+                <input type="search" placeholder="Найти расход" id="expensesSearchInput">
               </label>
-              <button class="ghost-button" type="button">Фильтры</button>
+              <button class="ghost-button" type="button" data-action="cycle-owner-filter" data-scope="expense" id="expensesFilterButton">Фильтр: Все</button>
             </div>
 
-            <div class="record-list">
+            <div class="record-list" data-record-list="expense">
               <div class="record">
                 <div><b>Аренда → Данил</b><small>Дом · сегодня</small></div>
                 <strong class="rose">−45 000 ₽</strong>
@@ -355,7 +368,7 @@
               </div>
             </div>
 
-            <div class="ui-state">
+            <div class="ui-state" data-empty-state="expense" hidden>
               <b>Расходов пока нет</b>
               <small>Пустое состояние для периода без операций.</small>
             </div>
@@ -392,25 +405,45 @@
               <input id="categoryNameInput" type="text" value="Новая категория" placeholder="Например: Еда">
             </label>
             <fieldset class="field icon-picker-field">
-              <legend>Иконка</legend>
-              <input id="categoryIconValue" type="hidden" value="tag">
+              <legend>Эмодзи</legend>
+              <input id="categoryIconValue" type="hidden" value="💸">
               <div class="category-icon-preview">
                 <span id="categoryIconPreview" class="category-icon violet"></span>
-                <small>Выберите иконку для карточки категории</small>
+                <small>Выберите эмодзи для карточки категории</small>
               </div>
               <div class="icon-picker-grid" id="categoryIconPicker" aria-label="Выбор иконки категории">
-                <button class="is-selected" type="button" data-action="select-category-icon" data-icon="tag" aria-label="Категория"></button>
-                <button type="button" data-action="select-category-icon" data-icon="wallet" aria-label="Доход"></button>
-                <button type="button" data-action="select-category-icon" data-icon="briefcase" aria-label="Фриланс"></button>
-                <button type="button" data-action="select-category-icon" data-icon="shoppingCart" aria-label="Покупки"></button>
-                <button type="button" data-action="select-category-icon" data-icon="car" aria-label="Транспорт"></button>
-                <button type="button" data-action="select-category-icon" data-icon="home" aria-label="Дом"></button>
-                <button type="button" data-action="select-category-icon" data-icon="heartPulse" aria-label="Здоровье"></button>
-                <button type="button" data-action="select-category-icon" data-icon="gift" aria-label="Подарки"></button>
-                <button type="button" data-action="select-category-icon" data-icon="calendarClock" aria-label="Платежи"></button>
-                <button type="button" data-action="select-category-icon" data-icon="target" aria-label="Цель"></button>
-                <button type="button" data-action="select-category-icon" data-icon="landmark" aria-label="Кредит"></button>
-                <button type="button" data-action="select-category-icon" data-icon="creditCard" aria-label="Карта"></button>
+                <span class="emoji-picker-group">Популярные</span>
+                <button class="is-selected" type="button" data-action="select-category-icon" data-icon="💸" aria-label="Финансы">💸</button>
+                <button type="button" data-action="select-category-icon" data-icon="💼" aria-label="Работа">💼</button>
+                <button type="button" data-action="select-category-icon" data-icon="🎁" aria-label="Подарки">🎁</button>
+                <button type="button" data-action="select-category-icon" data-icon="📅" aria-label="Платежи">📅</button>
+                <button type="button" data-action="select-category-icon" data-icon="🎯" aria-label="Цель">🎯</button>
+                <button type="button" data-action="select-category-icon" data-icon="🧾" aria-label="Расходы">🧾</button>
+                <span class="emoji-picker-group">Еда</span>
+                <button type="button" data-action="select-category-icon" data-icon="🍽️" aria-label="Еда">🍽️</button>
+                <button type="button" data-action="select-category-icon" data-icon="🛒" aria-label="Покупки">🛒</button>
+                <button type="button" data-action="select-category-icon" data-icon="☕" aria-label="Кафе">☕</button>
+                <button type="button" data-action="select-category-icon" data-icon="🍕" aria-label="Рестораны">🍕</button>
+                <span class="emoji-picker-group">Дом</span>
+                <button type="button" data-action="select-category-icon" data-icon="🏠" aria-label="Дом">🏠</button>
+                <button type="button" data-action="select-category-icon" data-icon="🛋️" aria-label="Домашнее">🛋️</button>
+                <button type="button" data-action="select-category-icon" data-icon="🔌" aria-label="Коммунальные">🔌</button>
+                <button type="button" data-action="select-category-icon" data-icon="🧹" aria-label="Быт">🧹</button>
+                <span class="emoji-picker-group">Транспорт</span>
+                <button type="button" data-action="select-category-icon" data-icon="🚕" aria-label="Транспорт">🚕</button>
+                <button type="button" data-action="select-category-icon" data-icon="⛽" aria-label="Бензин">⛽</button>
+                <button type="button" data-action="select-category-icon" data-icon="🚇" aria-label="Метро">🚇</button>
+                <button type="button" data-action="select-category-icon" data-icon="🚗" aria-label="Авто">🚗</button>
+                <span class="emoji-picker-group">Здоровье и отдых</span>
+                <button type="button" data-action="select-category-icon" data-icon="💊" aria-label="Здоровье">💊</button>
+                <button type="button" data-action="select-category-icon" data-icon="❤️" aria-label="Здоровье">❤️</button>
+                <button type="button" data-action="select-category-icon" data-icon="🎬" aria-label="Развлечения">🎬</button>
+                <button type="button" data-action="select-category-icon" data-icon="🎮" aria-label="Игры">🎮</button>
+                <span class="emoji-picker-group">Работа и финансы</span>
+                <button type="button" data-action="select-category-icon" data-icon="💻" aria-label="Фриланс">💻</button>
+                <button type="button" data-action="select-category-icon" data-icon="🏦" aria-label="Банк">🏦</button>
+                <button type="button" data-action="select-category-icon" data-icon="💳" aria-label="Карта">💳</button>
+                <button type="button" data-action="select-category-icon" data-icon="📈" aria-label="Инвестиции">📈</button>
               </div>
             </fieldset>
             <label class="field">
@@ -424,12 +457,12 @@
             </label>
             <label class="field">
               <span>Цветовой акцент</span>
-              <select>
-                <option>Красный</option>
-                <option>Зеленый</option>
-                <option>Желтый</option>
-                <option>Бирюзовый</option>
-                <option>Фиолетовый</option>
+              <select id="categoryColorSelect">
+                <option value="rose">Красный</option>
+                <option value="green">Зеленый</option>
+                <option value="amber">Желтый</option>
+                <option value="teal">Бирюзовый</option>
+                <option value="violet">Фиолетовый</option>
               </select>
             </label>
           </div>
@@ -531,12 +564,12 @@
         <section class="grid page-stats finance-stats" aria-label="Сводка кредитных карт">
           <article class="card stat-card">
             <span class="label">Общая задолженность</span>
-            <div class="value rose">126 800 ₽</div>
+            <div class="value rose" data-credits-summary="total-debt">126 800 ₽</div>
           </article>
           <article class="card stat-card">
             <span class="label">Ближайший платеж</span>
-            <div class="value amber">21 300 ₽</div>
-            <small class="muted">через 5 дней · Данил</small>
+            <div class="value amber" data-credits-summary="next-payment">21 300 ₽</div>
+            <small class="muted" data-credits-summary="next-payment-meta">через 5 дней · Данил</small>
           </article>
         </section>
 
@@ -547,70 +580,26 @@
 
         <section class="card finance-editor floating-editor" id="creditsEditor" hidden>
           <div class="between"><b>Создание и редактирование</b><span class="badge">UI</span></div>
+          <input type="hidden" id="creditEditingId" value="">
           <div class="form-grid">
-            <label class="field"><span>Тип записи</span><select><option>Кредитная карта</option><option>Кредит</option><option>Рассрочка</option></select></label>
-            <label class="field bank-select-field"><span>Банк</span><select><option>Т-Банк</option><option>Сбер</option><option>ВТБ</option><option>Дом РФ</option><option>DNS Банк</option><option>МебельМаркет Банк</option></select><small>Логотип и цвет берутся из Настройки → Банки</small></label>
-            <label class="field"><span>Владелец</span><select><option>Данил</option><option>Юля</option></select></label>
-            <label class="field"><span>Первоначальная сумма</span><input type="text" value="96 000 ₽"></label>
-            <label class="field"><span>Ежемесячный платеж</span><input type="text" value="8 000 ₽"></label>
-            <label class="field"><span>Комиссия</span><input type="text" value="3,9% при снятии наличных"></label>
+            <label class="field"><span>Тип записи</span><select id="creditKindSelect"><option value="card">Кредитная карта</option><option value="loan">Кредит</option><option value="installment">Рассрочка</option></select></label>
+            <label class="field bank-select-field"><span>Банк</span><select id="creditBankSelect"></select><small>Логотип и цвет берутся из Настройки → Банки</small></label>
+            <label class="field"><span>Название</span><input id="creditTitleInput" type="text" value="Т-Банк Platinum"></label>
+            <label class="field"><span>Владелец</span><select id="creditOwnerSelect"><option value="user-danil">Данил</option><option value="user-yulya">Юля</option></select></label>
+            <label class="field"><span>Начальная сумма / лимит</span><input id="creditInitialInput" type="text" value="250000"></label>
+            <label class="field"><span>Текущая задолженность</span><input id="creditDebtInput" type="text" value="0"></label>
+            <label class="field"><span>Ставка, %</span><input id="creditRateInput" type="text" value="0"></label>
+            <label class="field"><span>Платеж</span><input id="creditPaymentInput" type="text" value="0"></label>
+            <label class="field"><span>Дата платежа</span><input id="creditDateInput" type="text" value="01.09.2026"></label>
+            <label class="field"><span>Срок, месяцев (кредит/рассрочка)</span><input id="creditTermInput" type="text" value=""></label>
+            <label class="field"><span>Льготный период, дней (карта)</span><input id="creditGraceInput" type="text" value=""></label>
           </div>
           <div class="button-stack inline-buttons"><button class="button" type="button" data-action="save-finance-draft">Сохранить</button><small class="muted" data-draft-status>Черновик не сохранен</small></div>
         </section>
 
         <section class="credit-section card">
-          <div class="between"><b>Кредитные карты</b><span class="badge teal">2 карты</span></div>
-          <div class="finance-list compact-list">
-            <article class="card finance-card credit-card" data-removable>
-              <button class="finance-main" type="button" data-action="toggle-detail">
-                <span class="bank-logo">ТБ</span>
-                <div>
-                  <b class="bank-brand bank-tbank"><span class="bank-logo-slot">Лого</span>Т-Банк Platinum</b>
-                  <small>Данил · льготный период 55 дней</small>
-                </div>
-                <strong class="rose debt-title">86 300 ₽ <em>35%</em></strong>
-              </button>
-              <div class="finance-metrics">
-                <span><small>Кредитный лимит</small><b>250 000 ₽</b></span>
-                <span><small>Задолженность</small><b>86 300 ₽</b></span>
-                <span><small>Мин. платеж</small><b>12 900 ₽</b></span>
-                <span><small>Дата платежа</small><b>06.09</b></span>
-              </div>
-              <span class="meter rose-meter"><i style="width:35%"></i></span>
-              <div class="finance-detail" hidden>
-                <p>Комиссия за снятие наличных 3,9%. Виртуальная карта подключена к семейным подпискам.</p>
-                <div class="record-actions">
-                  <button type="button">✎</button>
-                  <button type="button" data-action="remove-finance-item">×</button>
-                </div>
-              </div>
-            </article>
-
-            <article class="card finance-card credit-card" data-removable>
-              <button class="finance-main" type="button" data-action="toggle-detail">
-                <span class="bank-logo green">СБ</span>
-                <div>
-                  <b class="bank-brand bank-sber"><span class="bank-logo-slot">Лого</span>СберКарта кредитная</b>
-                  <small>Юля · льготный период 120 дней</small>
-                </div>
-                <strong class="rose debt-title">40 500 ₽ <em>23%</em></strong>
-              </button>
-              <div class="finance-metrics">
-                <span><small>Кредитный лимит</small><b>180 000 ₽</b></span>
-                <span><small>Задолженность</small><b>40 500 ₽</b></span>
-                <span><small>Мин. платеж</small><b>8 400 ₽</b></span>
-                <span><small>Дата платежа</small><b>14.09</b></span>
-              </div>
-              <span class="meter"><i style="width:23%"></i></span>
-              <div class="finance-detail" hidden>
-                <p>Комиссий нет для обычных покупок. Комиссия отображается только при редактировании карты.</p>
-                <div class="record-actions">
-                  <button type="button">✎</button>
-                  <button type="button" data-action="remove-finance-item">×</button>
-                </div>
-              </div>
-            </article>
-
+          <div class="between"><b>Кредитные карты</b><span class="badge teal" data-credits-count="card">2 карты</span></div>
+          <div class="finance-list compact-list" id="creditCardsList">
             <div class="ui-state empty-state" hidden>
               <b>Кредитных карт пока нет</b>
               <small>Добавленные карты появятся здесь отдельными карточками.</small>
@@ -620,79 +609,17 @@
 
         <section class="loan-sections">
           <article class="card">
-            <div class="between"><b>Кредиты</b><span class="badge amber">2 договора</span></div>
-            <div class="finance-list compact-list">
-              <div class="finance-card loan-card" data-removable>
-                <button class="finance-main" type="button" data-action="toggle-detail">
-                  <span class="bank-logo amber">ВТБ</span>
-                  <div><b class="bank-brand bank-vtb"><span class="bank-logo-slot">Лого</span>ВТБ</b><small>Автокредит · Данил · 36 месяцев</small></div>
-                  <strong class="debt-title">684 000 ₽ <em>59%</em></strong>
-                </button>
-                <div class="finance-metrics">
-                  <span><small>Первоначальная сумма</small><b>1 150 000 ₽</b></span>
-                  <span><small>Ставка</small><b>14,9%</b></span>
-                  <span><small>Платеж</small><b>36 700 ₽</b></span>
-                  <span><small>Дата</small><b>18.09</b></span>
-                </div>
-                <span class="meter"><i style="width:41%"></i></span>
-                <div class="finance-detail" hidden><p>Погашено 466 000 ₽ из первоначальной суммы.</p><div class="record-actions"><button type="button">✎</button><button type="button" data-action="remove-finance-item">×</button></div></div>
-              </div>
-
-              <div class="finance-card loan-card" data-removable>
-                <button class="finance-main" type="button" data-action="toggle-detail">
-                  <span class="bank-logo">ДОМ</span>
-                  <div><b class="bank-brand bank-dom"><span class="bank-logo-slot">Лого</span>Дом РФ</b><small>Кредит на ремонт · Юля · 24 месяца</small></div>
-                  <strong class="debt-title">210 400 ₽ <em>55%</em></strong>
-                </button>
-                <div class="finance-metrics">
-                  <span><small>Первоначальная сумма</small><b>380 000 ₽</b></span>
-                  <span><small>Ставка</small><b>11,5%</b></span>
-                  <span><small>Платеж</small><b>18 900 ₽</b></span>
-                  <span><small>Дата</small><b>27.09</b></span>
-                </div>
-                <span class="meter"><i style="width:45%"></i></span>
-                <div class="finance-detail" hidden><p>Осталось 14 платежей. Без штрафов и просрочек.</p><div class="record-actions"><button type="button">✎</button><button type="button" data-action="remove-finance-item">×</button></div></div>
-              </div>
+            <div class="between"><b>Кредиты</b><span class="badge amber" data-credits-count="loan">2 договора</span></div>
+            <div class="finance-list compact-list" id="loansList">
+              <div class="ui-state empty-state" hidden><b>Кредитов пока нет</b><small>Здесь появятся банковские кредиты.</small></div>
             </div>
-            <div class="ui-state empty-state" hidden><b>Кредитов пока нет</b><small>Здесь появятся банковские кредиты.</small></div>
           </article>
 
           <article class="card">
-            <div class="between"><b>Рассрочки</b><span class="badge teal">3 покупки</span></div>
-            <div class="finance-list compact-list">
-              <div class="finance-card loan-card" data-removable>
-                <button class="finance-main" type="button" data-action="toggle-detail">
-                  <span class="bank-logo teal">DNS</span>
-                  <div><b class="bank-brand bank-dns"><span class="bank-logo-slot">Лого</span>DNS</b><small>Ноутбук для работы · Данил · 10 месяцев</small></div>
-                  <strong class="debt-title">72 000 ₽ <em>60%</em></strong>
-                </button>
-                <div class="finance-metrics">
-                  <span><small>Первоначальная сумма</small><b>120 000 ₽</b></span>
-                  <span><small>Ставка</small><b>0%</b></span>
-                  <span><small>Платеж</small><b>12 000 ₽</b></span>
-                  <span><small>Дата</small><b>11.09</b></span>
-                </div>
-                <span class="meter"><i style="width:40%"></i></span>
-                <div class="finance-detail" hidden><p>Погашено 4 из 10 месяцев.</p><div class="record-actions"><button type="button">✎</button><button type="button" data-action="remove-finance-item">×</button></div></div>
-              </div>
-
-              <div class="finance-card loan-card" data-removable>
-                <button class="finance-main" type="button" data-action="toggle-detail">
-                  <span class="bank-logo green">ММ</span>
-                  <div><b class="bank-brand bank-mebel"><span class="bank-logo-slot">Лого</span>МебельМаркет</b><small>Мебель в детскую комнату · Юля · 6 месяцев</small></div>
-                  <strong class="debt-title">34 500 ₽ <em>50%</em></strong>
-                </button>
-                <div class="finance-metrics">
-                  <span><small>Первоначальная сумма</small><b>69 000 ₽</b></span>
-                  <span><small>Ставка</small><b>0%</b></span>
-                  <span><small>Платеж</small><b>11 500 ₽</b></span>
-                  <span><small>Дата</small><b>03.09</b></span>
-                </div>
-                <span class="meter"><i style="width:50%"></i></span>
-                <div class="finance-detail" hidden><p>Половина срока закрыта, следующий платеж в начале месяца.</p><div class="record-actions"><button type="button">✎</button><button type="button" data-action="remove-finance-item">×</button></div></div>
-              </div>
+            <div class="between"><b>Рассрочки</b><span class="badge teal" data-credits-count="installment">3 покупки</span></div>
+            <div class="finance-list compact-list" id="installmentsList">
+              <div class="ui-state empty-state" hidden><b>Рассрочек пока нет</b><small>Добавленные рассрочки появятся в этом блоке.</small></div>
             </div>
-            <div class="ui-state empty-state" hidden><b>Рассрочек пока нет</b><small>Добавленные рассрочки появятся в этом блоке.</small></div>
           </article>
         </section>
       </section>
@@ -704,74 +631,33 @@
           </div>
         </header>
 
-        <section class="grid page-stats finance-stats">
-          <article class="card stat-card"><span class="label">Запланировано за текущий месяц</span><div class="value amber">68 900 ₽</div></article>
-          <article class="card stat-card"><span class="label">Оплачено за текущий месяц</span><div class="value green">14 200 ₽</div></article>
+        <section class="grid page-stats finance-stats reminders-stats">
+          <article class="card stat-card"><span class="label">Запланировано за текущий месяц</span><div class="value amber" data-recurring-summary="planned">68 900 ₽</div></article>
+          <article class="card stat-card"><span class="label">Оплачено за текущий месяц</span><div class="value green" data-recurring-summary="paid">14 200 ₽</div></article>
         </section>
 
         <div class="category-tools under-stats-action">
           <span></span>
           <button class="button" type="button" data-action="toggle-editor" data-target="recurringEditor">Добавить запись</button>
         </div>
+        <div class="payment-legend recurring-payment-legend"><span><i class="legend-dot rose-bg"></i>&lt; 3 дня</span><span><i class="legend-dot amber-bg"></i>&lt; 7 дней</span><span><i class="legend-dot neutral-bg"></i>7+ дней</span></div>
 
         <aside class="card finance-editor floating-editor" id="recurringEditor" hidden>
           <b>Новый платеж</b>
+          <input type="hidden" id="recurringEditingId" value="">
           <div class="manage-form">
-            <label class="field"><span>Название</span><input type="text" value="Страховка автомобиля"></label>
-            <label class="field"><span>Сумма</span><input type="text" value="18 000 ₽"></label>
-            <label class="field"><span>Периодичность</span><select><option>ежегодно</option><option>ежемесячно</option><option>еженедельно</option></select></label>
-            <label class="field"><span>Владелец</span><select><option>Данил</option><option>Юля</option></select></label>
+            <label class="field"><span>Название</span><input id="recurringTitleInput" type="text" value="Страховка автомобиля"></label>
+            <label class="field"><span>Сумма</span><input id="recurringAmountInput" type="text" value="18000"></label>
+            <label class="field"><span>Дата оплаты</span><input id="recurringDateInput" type="text" value="01.09.2026"></label>
+            <label class="field"><span>Категория</span><input id="recurringCategoryInput" type="text" value="Прочее"></label>
+            <label class="field"><span>Периодичность</span><select id="recurringPeriodicitySelect"><option>ежегодно</option><option selected>ежемесячно</option><option>еженедельно</option></select></label>
+            <label class="field"><span>Владелец</span><select id="recurringOwnerSelect"><option value="user-danil">Данил</option><option value="user-yulya">Юля</option></select></label>
           </div>
           <div class="button-stack"><button class="button" type="button" data-action="save-finance-draft">Сохранить платеж</button><small class="muted" data-draft-status>Форма готова</small></div>
         </aside>
 
         <section class="finance-layout">
-          <div class="finance-list">
-            <article class="card finance-card recurring-card is-overdue" data-removable>
-              <button class="finance-main" type="button" data-action="toggle-detail">
-                <span class="bank-logo rose">АР</span>
-                <div><b>Аренда квартиры</b><small>Данил · Дом</small></div>
-                <strong class="rose">45 000 ₽</strong>
-              </button>
-              <div class="finance-metrics">
-                <span><small>Дата оплаты</small><b>01.09</b></span>
-                <span><small>Периодичность</small><b>ежемесячно</b></span>
-                <span><small>Статус</small><b>запланирован</b></span>
-                <span><small>Индикатор</small><b class="rose">просрочен</b></span>
-              </div>
-              <div class="finance-detail" hidden><p>Просроченный платеж выделен красной границей и мягким фоном.</p><div class="record-actions"><button type="button">✎</button><button type="button" data-action="remove-finance-item">×</button></div></div>
-            </article>
-
-            <article class="card finance-card recurring-card is-soon" data-removable>
-              <button class="finance-main" type="button" data-action="toggle-detail">
-                <span class="bank-logo amber">ИН</span>
-                <div><b>Домашний интернет и мобильная связь</b><small>Юля · Связь</small></div>
-                <strong>2 400 ₽</strong>
-              </button>
-              <div class="finance-metrics">
-                <span><small>Дата оплаты</small><b>04.09</b></span>
-                <span><small>Периодичность</small><b>ежемесячно</b></span>
-                <span><small>Статус</small><b>запланирован</b></span>
-                <span><small>Индикатор</small><b class="amber">скоро</b></span>
-              </div>
-              <div class="finance-detail" hidden><p>Платеж скоро наступит, карточка подсвечена желтым индикатором.</p><div class="record-actions"><button type="button">✎</button><button type="button" data-action="remove-finance-item">×</button></div></div>
-            </article>
-
-            <article class="card finance-card recurring-card" data-removable>
-              <button class="finance-main" type="button" data-action="toggle-detail">
-                <span class="bank-logo green">SP</span>
-                <div><b>Подписки: музыка, кино и облако</b><small>Данил · Развлечения</small></div>
-                <strong>1 690 ₽</strong>
-              </button>
-              <div class="finance-metrics">
-                <span><small>Дата оплаты</small><b>16.09</b></span>
-                <span><small>Периодичность</small><b>ежемесячно</b></span>
-                <span><small>Статус</small><b class="green">оплачен</b></span>
-                <span><small>Категория</small><b>Подписки</b></span>
-              </div>
-              <div class="finance-detail" hidden><p>Оплачен в текущем периоде, следующий цикл начнется через месяц.</p><div class="record-actions"><button type="button">✎</button><button type="button" data-action="remove-finance-item">×</button></div></div>
-            </article>
-
+          <div class="finance-list" id="recurringList">
             <div class="ui-state empty-state" hidden><b>Обязательных платежей пока нет</b><small>Регулярные счета появятся здесь после создания.</small></div>
           </div>
         </section>
@@ -804,51 +690,13 @@
 
         <section class="calendar-layout">
           <article class="card planner-card">
-            <div class="calendar-weekdays planner-weekdays"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span></div>
-            <div class="planner-grid">
-              <button class="planner-day is-muted" type="button" data-action="select-planner-day" data-date="2026-07-27" data-title="27 июля"><b>27</b></button>
-              <button class="planner-day is-muted" type="button" data-action="select-planner-day" data-date="2026-07-28" data-title="28 июля"><b>28</b></button>
-              <button class="planner-day is-muted" type="button" data-action="select-planner-day" data-date="2026-07-29" data-title="29 июля"><b>29</b></button>
-              <button class="planner-day is-muted" type="button" data-action="select-planner-day" data-date="2026-07-30" data-title="30 июля"><b>30</b></button>
-              <button class="planner-day is-muted" type="button" data-action="select-planner-day" data-date="2026-07-31" data-title="31 июля"><b>31</b></button>
-              <button class="planner-day is-selected" type="button" data-action="select-planner-day" data-date="2026-08-01" data-title="1 августа"><b>1</b><i class="event-dot green"></i><i class="event-dot rose"></i><i class="event-dot amber"></i><i class="event-dot teal"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-02" data-title="2 августа"><b>2</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-03" data-title="3 августа"><b>3</b><i class="event-dot amber"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-04" data-title="4 августа"><b>4</b><i class="event-dot teal"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-05" data-title="5 августа"><b>5</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-06" data-title="6 августа"><b>6</b><i class="event-dot rose"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-07" data-title="7 августа"><b>7</b><i class="event-dot violet"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-08" data-title="8 августа"><b>8</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-09" data-title="9 августа"><b>9</b><i class="event-dot green"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-10" data-title="10 августа"><b>10</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-11" data-title="11 августа"><b>11</b><i class="event-dot amber"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-12" data-title="12 августа"><b>12</b><i class="event-dot rose"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-13" data-title="13 августа"><b>13</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-14" data-title="14 августа"><b>14</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-15" data-title="15 августа"><b>15</b><i class="event-dot teal"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-16" data-title="16 августа"><b>16</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-17" data-title="17 августа"><b>17</b><i class="event-dot rose"></i><i class="event-dot amber"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-18" data-title="18 августа"><b>18</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-19" data-title="19 августа"><b>19</b><i class="event-dot rose"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-20" data-title="20 августа"><b>20</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-21" data-title="21 августа"><b>21</b><i class="event-dot green"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-22" data-title="22 августа"><b>22</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-23" data-title="23 августа"><b>23</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-24" data-title="24 августа"><b>24</b><i class="event-dot teal"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-25" data-title="25 августа"><b>25</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-26" data-title="26 августа"><b>26</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-27" data-title="27 августа"><b>27</b><i class="event-dot amber"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-28" data-title="28 августа"><b>28</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-29" data-title="29 августа"><b>29</b></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-30" data-title="30 августа"><b>30</b><i class="event-dot rose"></i></button>
-              <button class="planner-day" type="button" data-action="select-planner-day" data-date="2026-08-31" data-title="31 августа"><b>31</b><i class="event-dot green"></i></button>
-              <button class="planner-day is-muted" type="button" data-action="select-planner-day" data-date="2026-09-01" data-title="1 сентября"><b>1</b></button>
-              <button class="planner-day is-muted" type="button" data-action="select-planner-day" data-date="2026-09-02" data-title="2 сентября"><b>2</b></button>
-              <button class="planner-day is-muted" type="button" data-action="select-planner-day" data-date="2026-09-03" data-title="3 сентября"><b>3</b></button>
-              <button class="planner-day is-muted" type="button" data-action="select-planner-day" data-date="2026-09-04" data-title="4 сентября"><b>4</b></button>
-              <button class="planner-day is-muted" type="button" data-action="select-planner-day" data-date="2026-09-05" data-title="5 сентября"><b>5</b></button>
-              <button class="planner-day is-muted" type="button" data-action="select-planner-day" data-date="2026-09-06" data-title="6 сентября"><b>6</b></button>
+            <div class="calendar-head planner-head">
+              <button type="button" data-action="planner-prev" aria-label="Предыдущий месяц">‹</button>
+              <b id="plannerMonthTitle">Август 2026</b>
+              <button type="button" data-action="planner-next" aria-label="Следующий месяц">›</button>
             </div>
+            <div class="calendar-weekdays planner-weekdays"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span></div>
+            <div class="planner-grid" id="plannerGrid"></div>
           </article>
 
           <aside class="card day-events">
@@ -869,38 +717,16 @@
         </div>
         <section class="card finance-editor floating-editor" id="goalsEditor" hidden>
           <div class="between"><b>Новая цель</b><span class="badge">UI</span></div>
+          <input type="hidden" id="goalEditingId" value="">
           <div class="form-grid">
-            <label class="field"><span>Название</span><input type="text" value="Отпуск у моря"></label>
-            <label class="field"><span>Необходимая сумма</span><input type="text" value="450 000 ₽"></label>
-            <label class="field"><span>Накоплено</span><input type="text" value="186 000 ₽"></label>
-            <label class="field"><span>Дата создания</span><input type="text" value="01.08.2026"></label>
+            <label class="field"><span>Название</span><input id="goalNameInput" type="text" value="Отпуск у моря"></label>
+            <label class="field"><span>Необходимая сумма</span><input id="goalNeededInput" type="text" value="450000"></label>
+            <label class="field"><span>Накоплено</span><input id="goalSavedInput" type="text" value="0"></label>
+            <label class="field"><span>Дата создания</span><input id="goalDateInput" type="text" value="01.08.2026"></label>
           </div>
           <div class="button-stack inline-buttons"><button class="button" type="button" data-action="save-finance-draft">Сохранить</button><small class="muted" data-draft-status>Форма готова</small></div>
         </section>
-        <section class="goal-grid">
-          <article class="card goal-card" data-removable>
-            <button class="goal-head" type="button" data-action="toggle-detail"><span><b>Отпуск у моря</b><em>41%</em></span></button>
-            <small class="muted">Создана 01.08.2026</small>
-            <div class="finance-metrics goal-metrics"><span><small>Нужно</small><b>450 000 ₽</b></span><span><small>Накоплено</small><b>186 000 ₽</b></span><span><small>Осталось</small><b>264 000 ₽</b></span><span class="goal-control-cell"><small>Управление</small><span class="record-actions goal-actions"><button type="button">✎</button><button type="button" data-action="remove-finance-item">×</button></span></span></div>
-            <span class="meter"><i style="width:41%"></i></span>
-            <div class="finance-detail goal-history" hidden>
-              <p>История цели: 186 000 ₽ накоплено, 264 000 ₽ осталось. Данные рассчитаны из пополнений и снятий.</p>
-              <div class="record"><div><b>Пополнение из дохода</b><small>01.08 · Зарплата</small></div><strong class="green">+150 000 ₽</strong></div>
-              <div class="record"><div><b>Пополнение из кэшбэка</b><small>21.08 · Доход</small></div><strong class="green">+6 000 ₽</strong></div>
-              <div class="record"><div><b>Снятие на билеты</b><small>24.08 · Расход</small></div><strong class="rose">−20 000 ₽</strong></div>
-            </div>
-          </article>
-          <article class="card goal-card" data-removable>
-            <button class="goal-head" type="button" data-action="toggle-detail"><span><b>Первоначальный взнос за квартиру</b><em>64%</em></span></button>
-            <small class="muted">Создана 15.05.2026</small>
-            <div class="finance-metrics goal-metrics"><span><small>Нужно</small><b>1 200 000 ₽</b></span><span><small>Накоплено</small><b>768 000 ₽</b></span><span><small>Осталось</small><b>432 000 ₽</b></span><span class="goal-control-cell"><small>Управление</small><span class="record-actions goal-actions"><button type="button">✎</button><button type="button" data-action="remove-finance-item">×</button></span></span></div>
-            <span class="meter"><i style="width:64%"></i></span>
-            <div class="finance-detail goal-history" hidden>
-              <p>История цели: 768 000 ₽ накоплено, 432 000 ₽ осталось. Данные рассчитаны из пополнений и снятий.</p>
-              <div class="record"><div><b>Ежемесячное пополнение</b><small>15.07 · Доход</small></div><strong class="green">+120 000 ₽</strong></div>
-              <div class="record"><div><b>Перенос из свободных денег</b><small>01.08 · Доход</small></div><strong class="green">+80 000 ₽</strong></div>
-            </div>
-          </article>
+        <section class="goal-grid" id="goalsList">
           <div class="ui-state empty-state" hidden><b>Целей пока нет</b><small>Совместные цели появятся здесь после создания.</small></div>
         </section>
       </section>
@@ -909,12 +735,12 @@
         <header class="head page-head"><div><h1 class="title" id="analyticsTitle">Статистика</h1></div></header>
         <div class="date-range-wrap page-range-wrap">
           <div class="date-range page-range" aria-label="Период статистики">
-            <button class="is-active" type="button">Этот месяц</button>
-            <button type="button">Сегодня</button>
-            <button type="button">Вчера</button>
-            <button type="button">7 дней</button>
-            <button type="button">30 дней</button>
-            <button type="button">Все время</button>
+            <button class="is-active" type="button" data-action="select-period" data-period="thisMonth">Этот месяц</button>
+            <button type="button" data-action="select-period" data-period="today">Сегодня</button>
+            <button type="button" data-action="select-period" data-period="yesterday">Вчера</button>
+            <button type="button" data-action="select-period" data-period="7d">7 дней</button>
+            <button type="button" data-action="select-period" data-period="30d">30 дней</button>
+            <button type="button" data-action="select-period" data-period="all">Все время</button>
             <button type="button" data-action="toggle-page-range-calendar" data-calendar="analyticsRangeCalendar">Свой период</button>
           </div>
           <div class="choice-menu calendar-menu range-calendar page-calendar" id="analyticsRangeCalendar" data-page-range-calendar hidden>
@@ -934,34 +760,34 @@
           <label data-action="stats-tab" data-tab="operations"><input type="radio" name="statsTab"><span>Операции</span></label>
         </div>
 
+        <section class="grid page-stats" aria-label="Лучший и худший месяц" data-stats-overview-only>
+          <article class="card stat-card"><span class="label">Самый прибыльный месяц</span><div class="value green" data-stat="best-month-name">—</div><small class="muted" data-stat="best-month-value">—</small></article>
+          <article class="card stat-card"><span class="label">Самый затратный месяц</span><div class="value rose" data-stat="worst-month-name">—</div><small class="muted" data-stat="worst-month-value">—</small></article>
+        </section>
+
         <section class="stats-pane is-active" data-stats-pane="overview">
           <section class="analytics-grid">
-            <article class="card chart-card category-stat-card"><b>Доходы по категориям</b><div class="category-bars"><span style="--value:78%; --tone: var(--green)"><i></i><em>Зарплата</em><b class="green">243 000 ₽ (78%)</b></span><span style="--value:15%; --tone: var(--teal)"><i></i><em>Фриланс</em><b class="teal">48 000 ₽ (15%)</b></span><span style="--value:7%; --tone: var(--violet)"><i></i><em>Подарки</em><b class="violet">21 000 ₽ (7%)</b></span></div></article>
-            <article class="card chart-card category-stat-card"><b>Расходы по категориям</b><div class="category-bars"><span style="--value:42%; --tone: var(--rose)"><i></i><em>Дом</em><b class="rose">53 200 ₽ (42%)</b></span><span style="--value:28%; --tone: var(--amber)"><i></i><em>Еда</em><b class="amber">34 850 ₽ (28%)</b></span><span style="--value:15%; --tone: var(--teal)"><i></i><em>Транспорт</em><b class="teal">18 700 ₽ (15%)</b></span><span style="--value:9%; --tone: var(--violet)"><i></i><em>Здоровье</em><b class="violet">11 300 ₽ (9%)</b></span></div></article>
+            <article class="card chart-card category-stat-card"><b>Доходы по категориям</b><div class="category-bars" id="statsIncomeBars"></div></article>
+            <article class="card chart-card category-stat-card"><b>Расходы по категориям</b><div class="category-bars" id="statsExpenseBars"></div></article>
           </section>
           <section class="insight-grid stats-summary-grid">
-            <article class="card insight metric-insight"><span>Максимальный доход</span><b class="green">Зарплата</b><strong class="green">180 000 ₽ <em>58%</em></strong></article>
-            <article class="card insight metric-insight"><span>Максимальный расход</span><b class="rose">Аренда</b><strong class="rose">45 000 ₽ <em>36%</em></strong></article>
-            <article class="card insight metric-insight"><span>Средний доход за день</span><b class="green">Август 2026</b><strong class="green">10 064 ₽ <em>+12%</em></strong></article>
-            <article class="card insight metric-insight"><span>Средний расход за день</span><b class="rose">Август 2026</b><strong class="rose">4 051 ₽ <em>−7%</em></strong></article>
-            <article class="card insight metric-insight"><span>Количество операций</span><b>За период</b><strong>86 <em>операций</em></strong></article>
-            <article class="card insight metric-insight"><span>Крупнейшая категория доходов</span><b class="green">Зарплата</b><strong class="green">243 000 ₽ <em>78%</em></strong></article>
-            <article class="card insight metric-insight"><span>Крупнейшая категория расходов</span><b class="rose">Дом</b><strong class="rose">53 200 ₽ <em>42%</em></strong></article>
-            <article class="card insight metric-insight"><span>Самый прибыльный месяц</span><b class="green">Август</b><strong class="green">312 000 ₽ <em>100%</em></strong></article>
+            <article class="card insight metric-insight"><span>Максимальный доход</span><b class="green" data-stat="max-income-name">—</b><strong class="green" data-stat="max-income-value">— <em data-stat="max-income-percent"></em></strong></article>
+            <article class="card insight metric-insight"><span>Максимальный расход</span><b class="rose" data-stat="max-expense-name">—</b><strong class="rose" data-stat="max-expense-value">— <em data-stat="max-expense-percent"></em></strong></article>
+            <article class="card insight metric-insight"><span>Средний доход за день</span><b class="green" data-stat="period-label-1">—</b><strong class="green" data-stat="avg-income-value">— <em data-stat="avg-income-trend"></em></strong></article>
+            <article class="card insight metric-insight"><span>Средний расход за день</span><b class="rose" data-stat="period-label-2">—</b><strong class="rose" data-stat="avg-expense-value">— <em data-stat="avg-expense-trend"></em></strong></article>
+            <article class="card insight metric-insight"><span>Количество операций</span><b>За период</b><strong data-stat="operations-count">— <em>операций</em></strong></article>
+            <article class="card insight metric-insight"><span>Крупнейшая категория доходов</span><b class="green" data-stat="top-income-category-name">—</b><strong class="green" data-stat="top-income-category-value">— <em data-stat="top-income-category-percent"></em></strong></article>
+            <article class="card insight metric-insight"><span>Крупнейшая категория расходов</span><b class="rose" data-stat="top-expense-category-name">—</b><strong class="rose" data-stat="top-expense-category-value">— <em data-stat="top-expense-category-percent"></em></strong></article>
           </section>
         </section>
 
         <section class="stats-pane" data-stats-pane="operations" hidden>
           <div class="toolbar stats-operations-toolbar">
-            <label class="search-field"><span>Поиск</span><input type="search" placeholder="Найти операцию"></label>
-            <div class="segmented compact-filter" aria-label="Фильтр операций"><label><input type="radio" name="statsFilter" checked><span>Все</span></label><label><input type="radio" name="statsFilter"><span>Доходы</span></label><label><input type="radio" name="statsFilter"><span>Расходы</span></label></div>
+            <label class="search-field"><span><span class="sr-only">Поиск</span></span><input type="search" placeholder="Найти операцию" id="statsSearchInput"></label>
+            <div class="segmented compact-filter" aria-label="Фильтр операций"><label><input type="radio" name="statsFilter" value="all" checked><span>Все</span></label><label><input type="radio" name="statsFilter" value="income"><span>Доходы</span></label><label><input type="radio" name="statsFilter" value="expense"><span>Расходы</span></label></div>
           </div>
-          <section class="stats-history">
-            <article class="card operation-day"><div class="operation-day-head"><h3>Сегодня</h3><strong class="green">+22 700 ₽</strong></div><div class="stats-operation"><span class="category-orb green">↗</span><div><b>Зарплата <em class="owner-name owner-danil">Данил</em></b><small>Доход · 09:20</small></div><strong class="green">+25 000 ₽</strong></div><div class="stats-operation"><span class="category-orb rose">◼</span><div><b>Продукты <em class="owner-name owner-yulia">Юля</em></b><small>Еда · 14:45</small></div><strong class="rose">−2 300 ₽</strong></div></article>
-            <article class="card operation-day"><div class="operation-day-head"><h3>Вчера</h3><strong class="green">+10 260 ₽</strong></div><div class="stats-operation"><span class="category-orb green">✦</span><div><b>Фриланс <em class="owner-name owner-yulia">Юля</em></b><small>Доход · 18:10</small></div><strong class="green">+12 000 ₽</strong></div><div class="stats-operation"><span class="category-orb teal">◌</span><div><b>Интернет <em class="owner-name owner-danil">Данил</em></b><small>Связь · 10:00</small></div><strong class="rose">−1 200 ₽</strong></div><div class="stats-operation"><span class="category-orb amber">◆</span><div><b>Такси <em class="owner-name owner-yulia">Юля</em></b><small>Транспорт · 21:35</small></div><strong class="rose">−540 ₽</strong></div></article>
-            <article class="card operation-day"><div class="operation-day-head"><h3>12.08</h3><strong class="green">+8 000 ₽</strong></div><div class="stats-operation"><span class="category-orb violet">◎</span><div><b>Цель: отпуск <em class="owner-name owner-danil">Данил</em></b><small>Пополнение · 12:30</small></div><strong class="green">+8 000 ₽</strong></div></article>
-          </section>
-          <div class="ui-state empty-state" hidden><b>Операций нет</b><small>Когда за выбранный период появятся операции, они будут сгруппированы по дням.</small></div>
+          <section class="stats-history" id="statsHistoryList"></section>
+          <div class="ui-state empty-state" id="statsHistoryEmpty" hidden><b>Операций нет</b><small>Когда за выбранный период появятся операции, они будут сгруппированы по дням.</small></div>
         </section>
       </section>
 
@@ -969,12 +795,12 @@
         <header class="head page-head"><div><h1 class="title" id="archiveTitle">Архив</h1></div></header>
         <div class="date-range-wrap page-range-wrap">
           <div class="date-range page-range" aria-label="Период архива">
-            <button class="is-active" type="button">Этот месяц</button>
-            <button type="button">Сегодня</button>
-            <button type="button">Вчера</button>
-            <button type="button">7 дней</button>
-            <button type="button">30 дней</button>
-            <button type="button">Все время</button>
+            <button class="is-active" type="button" data-action="select-period" data-period="thisMonth">Этот месяц</button>
+            <button type="button" data-action="select-period" data-period="today">Сегодня</button>
+            <button type="button" data-action="select-period" data-period="yesterday">Вчера</button>
+            <button type="button" data-action="select-period" data-period="7d">7 дней</button>
+            <button type="button" data-action="select-period" data-period="30d">30 дней</button>
+            <button type="button" data-action="select-period" data-period="all">Все время</button>
             <button type="button" data-action="toggle-page-range-calendar" data-calendar="archiveRangeCalendar">Свой диапазон</button>
           </div>
           <div class="choice-menu calendar-menu range-calendar page-calendar" id="archiveRangeCalendar" data-page-range-calendar hidden>
@@ -988,44 +814,95 @@
           </div>
         </div>
         <div class="toolbar archive-toolbar">
-          <label class="search-field"><span>Поиск</span><input type="search" value="" placeholder="Найти запись"></label>
-          <button class="ghost-button" type="button">Фильтр</button>
-          <button class="ghost-button" type="button">Сортировка</button>
+          <label class="search-field"><span><span class="sr-only">Поиск</span></span><input type="search" value="" placeholder="Найти запись" id="archiveSearchInput"></label>
+          <button class="ghost-button" type="button" data-action="cycle-owner-filter" data-scope="archive" id="archiveFilterButton">Фильтр: Все</button>
+          <button class="ghost-button" type="button" data-action="cycle-archive-sort" id="archiveSortButton">Сортировка: сначала новые</button>
         </div>
         <section class="card">
-          <div class="record-list">
-            <div class="record archive-record" data-removable><div><b>Зарплата за июль → Данил</b><small>31.07 · Доход · выполнено</small></div><strong class="green">+180 000 ₽</strong><button class="ghost-button" type="button" data-action="toggle-detail">Подробнее</button><div class="finance-detail" hidden><p>Категория: Зарплата. Статус: получено.</p></div></div>
-            <div class="record archive-record" data-removable><div><b>Оплаченная аренда → Данил</b><small>01.07 · Дом · оплачено</small></div><strong class="rose">−45 000 ₽</strong><button class="ghost-button" type="button" data-action="toggle-detail">Подробнее</button><div class="finance-detail" hidden><p>Категория: обязательный платеж. Статус: оплачен.</p></div></div>
-            <div class="record archive-record" data-removable><div><b>Закрытая рассрочка DNS → Юля</b><small>20.07 · Рассрочка · закрыто</small></div><strong>0 ₽</strong><button class="ghost-button" type="button" data-action="toggle-detail">Подробнее</button><div class="finance-detail" hidden><p>Первоначальная сумма 48 000 ₽, обязательства закрыты.</p></div></div>
+          <div class="record-list" id="archiveRecordList"></div>
+          <div class="ui-state" id="archiveEmptyState" hidden><b>Архив пуст</b><small>Завершенные операции появятся здесь после закрытия.</small></div>
+        </section>
+      </section>
+
+      <section class="screen" id="remindersScreen" aria-labelledby="remindersTitle">
+        <header class="head page-head">
+          <div><h1 class="title" id="remindersTitle">Напоминания</h1></div>
+        </header>
+
+        <section class="grid page-stats finance-stats reminders-stats">
+          <article class="card stat-card"><span class="label">Предстоящие</span><div class="value violet" data-reminders-summary="active">0</div></article>
+          <article class="card stat-card"><span class="label">Выполнено</span><div class="value green" data-reminders-summary="completed">0</div></article>
+        </section>
+
+        <div class="category-tools under-stats-action">
+          <span></span>
+          <button class="button" type="button" data-action="toggle-editor" data-target="reminderEditor">Добавить запись</button>
+        </div>
+
+        <aside class="card finance-editor floating-editor reminder-editor" id="reminderEditor" hidden>
+          <b>Новое напоминание</b>
+          <input type="hidden" id="reminderEditingId" value="">
+          <div class="form-grid">
+            <label class="field"><span>Название</span><input id="reminderTitleInput" type="text" value="Оплатить интернет"></label>
+            <label class="field"><span>Описание</span><textarea id="reminderDescriptionInput" rows="3" placeholder="Необязательно"></textarea></label>
+            <label class="field"><span>Дата первого выполнения</span><input id="reminderDateInput" type="text" value="25.08.2026"></label>
+            <label class="field"><span>Ответственный</span><select id="reminderAssigneeSelect"><option value="user-danil">Данил</option><option value="user-yulya">Юля</option><option value="both">Оба</option></select></label>
+            <label class="field"><span>Повторение</span><select id="reminderRepeatSelect"><option value="none">Не повторять</option><option value="daily">Каждый день</option><option value="weekly">Каждую неделю</option><option value="monthly" selected>Каждый месяц</option><option value="yearly">Каждый год</option></select></label>
+            <label class="field" id="reminderMonthlyDayField"><span>Число месяца</span><input id="reminderMonthlyDayInput" type="text" value="25"></label>
           </div>
-          <div class="ui-state"><b>Архив пуст</b><small>Завершенные операции появятся здесь после закрытия.</small></div>
+          <div class="form-actions">
+            <button class="button" type="button" data-action="save-finance-draft">Сохранить</button>
+          </div>
+          <div class="ui-state" data-draft-status><b>Черновик</b><small>Заполните поля и сохраните напоминание.</small></div>
+        </aside>
+
+        <section class="reminders-layout">
+          <article class="card reminders-section-card">
+            <div class="between"><b>Предстоящие</b><span class="badge" id="activeRemindersBadge">0</span></div>
+            <div class="finance-list reminders-list" id="activeRemindersList"></div>
+            <div class="ui-state empty-state" id="activeRemindersEmpty" hidden><b>Напоминаний нет</b><small>Создайте задачу, чтобы ничего не потерялось между делами и платежами.</small></div>
+          </article>
+          <article class="card reminders-section-card">
+            <div class="between"><b>Выполненные</b><span class="badge green" id="completedRemindersBadge">0</span></div>
+            <div class="finance-list reminders-list" id="completedRemindersList"></div>
+            <div class="ui-state empty-state" id="completedRemindersEmpty" hidden><b>Пока пусто</b><small>Выполненные напоминания останутся здесь для контроля.</small></div>
+          </article>
         </section>
       </section>
 
       <section class="screen" id="settingsScreen" aria-labelledby="settingsTitle">
         <header class="head page-head"><div><h1 class="title" id="settingsTitle">Настройки</h1></div></header>
         <section class="settings-grid">
-          <article class="card"><div class="between"><b>Пользователи</b><span class="badge">2</span></div><div class="user-row"><span class="avatar danil">Д</span><div><b>Данил</b><small>Цвет пользователя · фиолетовый</small></div><button class="ghost-button" type="button">Редактировать</button></div><div class="user-row"><span class="avatar yulia">Ю</span><div><b>Юля</b><small>Цвет пользователя · бирюзовый</small></div><button class="ghost-button" type="button">Редактировать</button></div></article>
+          <article class="card">
+            <div class="between"><b>Пользователи</b><span class="badge" id="usersCount">2</span></div>
+            <div id="usersList"></div>
+            <div class="finance-editor user-editor" id="userEditor" hidden>
+              <input type="hidden" id="userEditingId" value="">
+              <div class="form-grid">
+                <label class="field"><span>Имя</span><input type="text" id="userNameInput" value="Данил"></label>
+                <label class="field"><span>Цвет пользователя</span><select id="userToneSelect"><option value="violet">Фиолетовый</option><option value="teal">Бирюзовый</option><option value="green">Зелёный</option><option value="rose">Розовый</option><option value="amber">Жёлтый</option></select></label>
+              </div>
+              <div class="form-actions">
+                <button class="button" type="button" data-action="save-finance-draft">Сохранить</button>
+              </div>
+              <div class="ui-state" data-draft-status><b>Профиль</b><small>Имя и цвет используются только для отображения автора в интерфейсе.</small></div>
+            </div>
+          </article>
           <article class="card banks-settings-card">
             <div class="between"><b>Банки</b><button class="ghost-button" type="button" data-action="toggle-editor" data-target="bankEditor">Добавить</button></div>
             <div class="bank-editor" id="bankEditor" hidden>
+              <input type="hidden" id="bankEditingId" value="">
               <div class="form-grid">
-                <label class="field"><span>Название банка</span><input type="text" value="Т-Банк"></label>
-                <label class="field"><span>Фирменный цвет</span><input type="color" value="#fde047"></label>
-                <label class="field"><span>Логотип</span><input type="file" accept="image/*"></label>
+                <label class="field"><span>Название банка</span><input type="text" id="bankNameInput" value="Новый банк"></label>
+                <label class="field"><span>Фирменный цвет</span><input type="color" id="bankColorInput" value="#a78bfa"></label>
+                <label class="field"><span>Логотип</span><input type="file" accept="image/*" id="bankLogoInput"></label>
               </div>
               <div class="button-stack inline-buttons"><button class="button" type="button" data-action="save-finance-draft">Сохранить банк</button><small class="muted" data-draft-status>Форма готова</small></div>
-              <small class="muted">UI-заготовка справочника. Позже эти данные будут применяться ко всем кредитам, картам и рассрочкам.</small>
             </div>
-            <div class="bank-directory">
-              <div class="bank-directory-card"><span class="bank-logo-slot">Лого</span><div><b class="bank-tbank">Т-Банк</b><small>Используется в кредитных картах</small></div><i style="background:#fde047"></i><div class="record-actions"><button type="button">✎</button><button type="button">×</button></div></div>
-              <div class="bank-directory-card"><span class="bank-logo-slot">Лого</span><div><b class="bank-sber">Сбер</b><small>Используется в кредитных картах</small></div><i style="background:#6ee7b7"></i><div class="record-actions"><button type="button">✎</button><button type="button">×</button></div></div>
-              <div class="bank-directory-card"><span class="bank-logo-slot">Лого</span><div><b class="bank-vtb">ВТБ</b><small>Используется в кредитах</small></div><i style="background:#60a5fa"></i><div class="record-actions"><button type="button">✎</button><button type="button">×</button></div></div>
-              <div class="bank-directory-card"><span class="bank-logo-slot">Лого</span><div><b class="bank-dns">DNS Банк</b><small>Используется в рассрочках</small></div><i style="background:#5eead4"></i><div class="record-actions"><button type="button">✎</button><button type="button">×</button></div></div>
-            </div>
+            <div class="bank-directory" id="bankDirectory"></div>
           </article>
-          <article class="card insights-settings-card"><div class="between"><b>Инсайты</b><span class="badge">2 активных</span></div><div class="settings-list insight-settings-list"><span><i class="green-bg"></i><b>Предстоящие платежи</b><label class="mini-switch"><input type="checkbox" checked><em></em></label></span><span><i class="amber-bg"></i><b>Основная категория расходов</b><label class="mini-switch"><input type="checkbox" checked><em></em></label></span><span class="is-disabled"><i class="violet-bg"></i><b>До зарплаты осталось X дней</b><small>Позже</small></span><span class="is-disabled"><i class="teal-bg"></i><b>До цели осталось X ₽</b><small>Позже</small></span></div></article>
-          <article class="card"><b>Внешний вид</b><div class="segmented settings-tabs"><label><input type="radio" name="theme"><span>Светлая</span></label><label><input type="radio" name="theme" checked><span>Темная</span></label><label><input type="radio" name="theme"><span>Системная</span></label></div></article>
+          <article class="card insights-settings-card"><div class="between"><b>Инсайты</b><span class="badge" id="insightsActiveBadge">2 активных</span></div><div class="settings-list insight-settings-list"><span><i class="green-bg"></i><b>Предстоящие платежи</b><label class="mini-switch"><input type="checkbox" checked id="insightToggleUpcoming" data-insight-key="upcoming"><em></em></label></span><span><i class="amber-bg"></i><b>Основная категория расходов</b><label class="mini-switch"><input type="checkbox" checked id="insightToggleTopCategory" data-insight-key="topCategory"><em></em></label></span><span class="is-disabled"><i class="violet-bg"></i><b>До зарплаты осталось X дней</b><small>Позже</small></span><span class="is-disabled"><i class="teal-bg"></i><b>До цели осталось X ₽</b><small>Позже</small></span></div></article>
+          <article class="card"><b>Внешний вид</b><div class="segmented settings-tabs"><label><input type="radio" name="theme" value="light"><span>Светлая</span></label><label><input type="radio" name="theme" value="dark" checked><span>Темная</span></label><label><input type="radio" name="theme" value="system"><span>Системная</span></label></div></article>
         </section>
       </section>
 
@@ -1049,6 +926,7 @@
             <button class="section-item" type="button" data-action="show-screen" data-screen="goals"><span class="violet">◎</span><b>Цели</b></button>
             <button class="section-item" type="button" data-action="show-screen" data-screen="analytics"><span class="green">▤</span><b>Статистика</b></button>
             <button class="section-item" type="button" data-action="show-screen" data-screen="archive"><span class="rose">◍</span><b>Архив</b></button>
+            <button class="section-item" type="button" data-action="show-screen" data-screen="reminders"><span class="violet">◌</span><b>Напоминания</b></button>
             <button class="section-item" type="button" data-action="show-screen" data-screen="settings"><span class="amber">⚙</span><b>Настройки</b></button>
           </div>
         </section>
@@ -1057,13 +935,13 @@
   </div>
 
   <nav class="mobilebar" aria-label="Основная навигация">
-    <button type="button" data-action="dashboard"><b>Главная</b></button>
+    <button type="button" data-action="dashboard" aria-label="Главная" title="Главная"></button>
     <button class="mobile-add" type="button" data-action="open-sheet" aria-label="Добавить">+</button>
-    <button type="button" data-action="more">Меню</button>
+    <button type="button" data-action="more" aria-label="Меню" title="Меню"></button>
   </nav>
 
   <div class="app-modal-backdrop" data-action="request-close-modal" hidden></div>
-  <section class="app-modal" id="appModal" role="dialog" aria-modal="true" aria-labelledby="appModalTitle" hidden>
+  <section class="app-modal" id="appModal" role="dialog" aria-modal="true" aria-labelledby="appModalTitle" tabindex="-1" hidden>
     <div class="app-modal-panel">
       <header class="app-modal-head">
         <div>
@@ -1087,14 +965,14 @@
   <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
 
   <div class="sheet-backdrop" data-action="close-sheet" hidden></div>
-  <section class="bottom-sheet operation-sheet" id="addSheet" aria-labelledby="operationAmount" aria-modal="true" role="dialog" hidden>
+  <section class="bottom-sheet operation-sheet" id="addSheet" aria-labelledby="operationAmount" aria-modal="true" role="dialog" tabindex="-1" hidden>
     <div class="operation-panel" data-operation-view="main">
       <header class="operation-header">
         <button class="operation-cancel" type="button" data-action="close-sheet">Отмена</button>
       </header>
 
       <button class="operation-category-select" type="button" data-action="open-category-picker" aria-label="Выбрать категорию">
-        <span class="category-orb rose">◉</span>
+        <span class="category-orb">◉</span>
         <span><small>Категория</small><b id="operationCategoryValue">Выбрать</b></span>
         <i>›</i>
       </button>
@@ -1125,8 +1003,8 @@
         <fieldset class="operation-meta-card owner-meta">
           <legend>Пользователь</legend>
           <div class="operation-owner-toggle">
-            <label><input type="radio" name="owner" checked><span class="owner-name owner-danil">Данил</span></label>
-            <label><input type="radio" name="owner"><span class="owner-name owner-yulia">Юля</span></label>
+            <label><input type="radio" name="owner" value="user-danil" checked><span class="owner-name owner-danil">Данил</span></label>
+            <label><input type="radio" name="owner" value="user-yulya"><span class="owner-name owner-yulia">Юля</span></label>
           </div>
         </fieldset>
 
@@ -1179,63 +1057,43 @@
       </header>
 
       <label class="category-search">
-        <span>Поиск</span>
-        <input type="search" placeholder="Найти категорию">
+        <span><span class="sr-only">Поиск</span></span>
+        <input type="search" placeholder="Найти категорию" id="categoryPickerSearchInput">
       </label>
 
       <section class="category-picker-section">
         <h3>Часто используемые</h3>
-        <div class="category-choice-row compact">
-          <button class="category-choice-card" type="button" data-action="select-operation-category" data-category="Продукты" data-tone="rose"><span class="category-orb rose">●</span><b>Продукты</b><small>супермаркет, доставка</small></button>
-          <button class="category-choice-card" type="button" data-action="select-operation-category" data-category="Зарплата" data-tone="green"><span class="category-orb green">↗</span><b>Зарплата</b><small>основная, аванс</small></button>
-        </div>
+        <div class="category-choice-row compact" id="categoryPickerFrequent"></div>
       </section>
 
       <section class="category-picker-section">
         <h3>Доходы</h3>
-        <div class="category-choice-row">
-          <button class="category-choice-card" type="button" data-action="select-operation-category" data-category="Зарплата" data-tone="green"><span class="category-orb green">↗</span><b>Зарплата</b><small>основная, аванс, премия</small></button>
-          <button class="category-choice-card" type="button" data-action="select-operation-category" data-category="Фриланс" data-tone="teal"><span class="category-orb teal">✦</span><b>Фриланс</b><small>проект, консультация</small></button>
-        </div>
+        <div class="category-choice-row" id="categoryPickerIncome"></div>
       </section>
 
       <section class="category-picker-section">
         <h3>Расходы</h3>
-        <div class="category-choice-row">
-          <button class="category-choice-card" type="button" data-action="select-operation-category" data-category="Продукты" data-tone="rose"><span class="category-orb rose">◼</span><b>Продукты</b><small>супермаркет, рынок</small></button>
-          <button class="category-choice-card" type="button" data-action="select-operation-category" data-category="Транспорт" data-tone="amber"><span class="category-orb amber">◆</span><b>Транспорт</b><small>такси, бензин</small></button>
-          <button class="category-choice-card" type="button" data-action="select-operation-category" data-category="Дом" data-tone="violet"><span class="category-orb violet">⌂</span><b>Дом</b><small>аренда, товары</small></button>
-          <button class="category-choice-card" type="button" data-action="select-operation-category" data-category="Здоровье" data-tone="teal"><span class="category-orb teal">♥</span><b>Здоровье</b><small>аптека, врач</small></button>
-        </div>
+        <div class="category-choice-row" id="categoryPickerExpense"></div>
       </section>
 
       <section class="category-picker-section">
         <h3>Цели</h3>
-        <div class="category-choice-row">
-          <button class="category-choice-card" type="button" data-action="select-operation-category" data-category="Отпуск у моря" data-tone="violet"><span class="category-orb violet">◎</span><b>Отпуск у моря</b><small>пополнение, снятие</small></button>
-        </div>
+        <div class="category-choice-row" id="categoryPickerGoals"></div>
       </section>
 
       <section class="category-picker-section">
         <h3>Кредиты</h3>
-        <div class="category-choice-row">
-          <button class="category-choice-card" type="button" data-action="select-operation-category" data-category="Автокредит ВТБ" data-tone="amber"><span class="category-orb amber">▣</span><b>Автокредит ВТБ</b><small>платеж, досрочно</small></button>
-        </div>
+        <div class="category-choice-row" id="categoryPickerLoans"></div>
       </section>
 
       <section class="category-picker-section">
         <h3>Кредитные карты</h3>
-        <div class="category-choice-row">
-          <button class="category-choice-card" type="button" data-action="select-operation-category" data-category="Tinkoff Platinum" data-tone="teal"><span class="category-orb teal">▤</span><b>Tinkoff Platinum</b><small>платеж, комиссия</small></button>
-        </div>
+        <div class="category-choice-row" id="categoryPickerCreditCards"></div>
       </section>
 
       <section class="category-picker-section">
         <h3>Обязательные платежи</h3>
-        <div class="category-choice-row">
-          <button class="category-choice-card" type="button" data-action="select-operation-category" data-category="Аренда квартиры" data-tone="rose"><span class="category-orb rose">◉</span><b>Аренда квартиры</b><small>дом, ежемесячно</small></button>
-          <button class="category-choice-card" type="button" data-action="select-operation-category" data-category="Интернет" data-tone="green"><span class="category-orb green">◌</span><b>Интернет</b><small>связь, автоплатеж</small></button>
-        </div>
+        <div class="category-choice-row" id="categoryPickerRecurring"></div>
       </section>
     </div>
   </section>
@@ -1243,4 +1101,3 @@
   <script type="module" src="app.js"></script>
 </body>
 </html>
-
