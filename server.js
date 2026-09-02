@@ -1,8 +1,9 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import http from 'node:http';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = __dirname;
+const root = path.dirname(fileURLToPath(import.meta.url));
 const types = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -16,8 +17,9 @@ http
   .createServer((request, response) => {
     const urlPath = decodeURIComponent(request.url.split('?')[0]);
     const filePath = path.join(root, urlPath === '/' ? 'index.html' : urlPath);
+    const relativePath = path.relative(root, filePath);
 
-    if (!filePath.startsWith(root)) {
+    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
       response.writeHead(403);
       response.end('Forbidden');
       return;

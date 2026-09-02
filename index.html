@@ -27,7 +27,7 @@
 
     <main class="content">
       <section class="screen is-active" id="dashboardScreen" aria-labelledby="dashboardTitle">
-        <div class="card dashboard-card">
+        <div class="dashboard-card">
           <header class="dashboard-top">
             <div>
               <h1 class="title" id="dashboardTitle">Главная</h1>
@@ -381,7 +381,6 @@
           <div>
             <h1 class="title" id="categoriesTitle">Категории</h1>
           </div>
-          <button class="button desktop-action" type="button" data-action="category-mode" data-mode="category">Создать категорию</button>
         </header>
 
         <div class="category-tools">
@@ -584,7 +583,6 @@
           <div class="form-grid">
             <label class="field"><span>Тип записи</span><select id="creditKindSelect"><option value="card">Кредитная карта</option><option value="loan">Кредит</option><option value="installment">Рассрочка</option></select></label>
             <label class="field bank-select-field"><span>Банк</span><select id="creditBankSelect"></select><small>Логотип и цвет берутся из Настройки → Банки</small></label>
-            <label class="field"><span>Название</span><input id="creditTitleInput" type="text" value="Т-Банк Platinum"></label>
             <label class="field"><span>Владелец</span><select id="creditOwnerSelect"><option value="user-danil">Данил</option><option value="user-yulya">Юля</option></select></label>
             <label class="field"><span>Начальная сумма / лимит</span><input id="creditInitialInput" type="text" value="250000"></label>
             <label class="field"><span>Текущая задолженность</span><input id="creditDebtInput" type="text" value="0"></label>
@@ -649,7 +647,7 @@
             <label class="field"><span>Название</span><input id="recurringTitleInput" type="text" value="Страховка автомобиля"></label>
             <label class="field"><span>Сумма</span><input id="recurringAmountInput" type="text" value="18000"></label>
             <label class="field"><span>Дата оплаты</span><input id="recurringDateInput" type="text" value="01.09.2026"></label>
-            <label class="field"><span>Категория</span><input id="recurringCategoryInput" type="text" value="Прочее"></label>
+            <label class="field"><span>Категория</span><select id="recurringCategorySelect"></select></label>
             <label class="field"><span>Периодичность</span><select id="recurringPeriodicitySelect"><option>ежегодно</option><option selected>ежемесячно</option><option>еженедельно</option></select></label>
             <label class="field"><span>Владелец</span><select id="recurringOwnerSelect"><option value="user-danil">Данил</option><option value="user-yulya">Юля</option></select></label>
           </div>
@@ -721,7 +719,7 @@
           <div class="form-grid">
             <label class="field"><span>Название</span><input id="goalNameInput" type="text" value="Отпуск у моря"></label>
             <label class="field"><span>Необходимая сумма</span><input id="goalNeededInput" type="text" value="450000"></label>
-            <label class="field"><span>Накоплено</span><input id="goalSavedInput" type="text" value="0"></label>
+            <label class="field"><span>Накоплено</span><input id="goalSavedInput" type="text" value="0" readonly aria-readonly="true"></label>
             <label class="field"><span>Дата создания</span><input id="goalDateInput" type="text" value="01.08.2026"></label>
           </div>
           <div class="button-stack inline-buttons"><button class="button" type="button" data-action="save-finance-draft">Сохранить</button><small class="muted" data-draft-status>Форма готова</small></div>
@@ -760,12 +758,11 @@
           <label data-action="stats-tab" data-tab="operations"><input type="radio" name="statsTab"><span>Операции</span></label>
         </div>
 
-        <section class="grid page-stats" aria-label="Лучший и худший месяц" data-stats-overview-only>
-          <article class="card stat-card"><span class="label">Самый прибыльный месяц</span><div class="value green" data-stat="best-month-name">—</div><small class="muted" data-stat="best-month-value">—</small></article>
-          <article class="card stat-card"><span class="label">Самый затратный месяц</span><div class="value rose" data-stat="worst-month-name">—</div><small class="muted" data-stat="worst-month-value">—</small></article>
-        </section>
-
         <section class="stats-pane is-active" data-stats-pane="overview">
+          <section class="grid page-stats" aria-label="Лучший и худший месяц">
+            <article class="card stat-card"><span class="label">Самый прибыльный месяц</span><div class="value green" data-stat="best-month-name">—</div><small class="muted" data-stat="best-month-value">—</small></article>
+            <article class="card stat-card"><span class="label">Самый затратный месяц</span><div class="value rose" data-stat="worst-month-name">—</div><small class="muted" data-stat="worst-month-value">—</small></article>
+          </section>
           <section class="analytics-grid">
             <article class="card chart-card category-stat-card"><b>Доходы по категориям</b><div class="category-bars" id="statsIncomeBars"></div></article>
             <article class="card chart-card category-stat-card"><b>Расходы по категориям</b><div class="category-bars" id="statsExpenseBars"></div></article>
@@ -909,7 +906,6 @@
       <section class="screen" id="moreScreen" aria-labelledby="moreTitle">
         <header class="head">
           <div>
-            <span class="badge">Все разделы</span>
             <h1 class="title" id="moreTitle">Меню</h1>
           </div>
           <button class="button" type="button" data-action="dashboard">На главную</button>
@@ -1057,8 +1053,7 @@
       </header>
 
       <label class="category-search">
-        <span><span class="sr-only">Поиск</span></span>
-        <input type="search" placeholder="Найти категорию" id="categoryPickerSearchInput">
+        <input type="search" placeholder="Найти категорию" id="categoryPickerSearchInput" aria-label="Поиск категории">
       </label>
 
       <section class="category-picker-section">

@@ -1,28 +1,23 @@
-const CACHE_NAME = 'fambu-shell-v90';
+const CACHE_NAME = 'fambu-shell-v106';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
   './db.js',
+  './payment-cycle.js',
+  './finance-domain.js',
   './manifest.webmanifest',
   './assets/brand-icon.svg',
   './assets/icon-192.png',
   './assets/icon-512.png',
   './assets/apple-touch-icon.png',
 ];
+const CACHEABLE_PATHS = new Set(ASSETS.map((asset) => new URL(asset, self.location.href).pathname));
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) =>
-      Promise.all(
-        ASSETS.map((asset) =>
-          cache.add(asset).catch((error) => {
-            console.warn('FamBu cache skipped', asset, error);
-          })
-        )
-      )
-    )
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
   self.skipWaiting();
 });
@@ -38,13 +33,22 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.origin !== self.location.origin) return;
+
+  const isNavigation = event.request.mode === 'navigate';
+  const isStaticAsset = CACHEABLE_PATHS.has(requestUrl.pathname);
+  if (!isNavigation && !isStaticAsset) return;
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        if (response.ok && isStaticAsset) {
+          const copy = response.clone();
+          event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy)));
+        }
         return response;
       })
-      .catch(() => caches.match(event.request))
+      .catch(() => isNavigation ? caches.match('./index.html') : caches.match(event.request))
   );
 });
