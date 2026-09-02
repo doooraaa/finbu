@@ -690,11 +690,11 @@ function openRecordEditor(control) {
 }
 
 const OWNER_COLOR_BY_TONE = {
-  violet: '#a78bfa',
-  teal: '#5eead4',
-  green: '#6ee7b7',
-  rose: '#fda4af',
-  amber: '#fde68a',
+  violet: '#afa9ec',
+  teal: '#5dcaa5',
+  green: '#5d96ec',
+  rose: '#f0997b',
+  amber: '#fac775',
 };
 const ownerVisualsById = new Map();
 
@@ -836,7 +836,7 @@ async function applyTheme(theme = 'dark') {
   document.querySelectorAll('input[name="theme"]').forEach((input) => {
     input.checked = input.value === nextTheme;
   });
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', document.body.dataset.theme === 'light' ? '#eef2f8' : '#080b12');
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', document.body.dataset.theme === 'light' ? '#eef2f8' : '#000000');
 }
 
 async function loadTheme() {
@@ -2077,11 +2077,12 @@ function renderDebtCard({ id, datasetKey, bankName, bankColor, bankLogo, subtitl
   card.innerHTML = `
     <button class="finance-main" type="button" data-action="toggle-detail">
       ${logoMarkup}
-      <div><b class="bank-brand" style="${bankColor ? `color:${bankColor}` : ''}">${escapeHtml(bankName || 'Банк')}</b><small>${subtitle}</small></div>
+      <div><b class="bank-brand">${escapeHtml(bankName || 'Банк')}</b><small>${subtitle}</small></div>
       <strong class="${meterTone} debt-title">${formatRub(paidAmount)} <em>${paidPercent}%</em></strong>
     </button>
     <div class="finance-metrics">${metrics}</div>
     <span class="meter${meterTone === 'rose' ? ' rose-meter' : ''}"><i style="width:${paidPercent}%"></i></span>
+    <small class="meter-caption">Погашено ${paidPercent}%</small>
     <div class="finance-detail" hidden>
       ${debt > 0 ? `<button class="button quick-action-button" type="button" data-action="make-quick-payment" data-payment-kind="${paymentKind}" aria-label="Внести платёж">${icon('banknote', 'ui-icon button-icon')}Внести платёж</button>` : ''}
       <div class="record-actions">

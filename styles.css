@@ -50,7 +50,7 @@ body[data-theme="light"] {
   color-scheme: light;
   --bg: #eef2f8;
   --card: rgba(255, 255, 255, 0.84);
-  --line: rgba(15, 23, 42, 0.11);
+  --line: rgba(10, 10, 10, 0.11);
   --text: #101828;
   --text-secondary: #334155;
   --text-tertiary: #475569;
@@ -58,7 +58,7 @@ body[data-theme="light"] {
   --muted: #64748b;
   background:
     radial-gradient(circle at 8% 0, rgba(175, 169, 236, 0.14), transparent 34rem),
-    radial-gradient(circle at 95% 5%, rgba(20, 184, 166, 0.12), transparent 30rem),
+    radial-gradient(circle at 95% 5%, rgba(93, 202, 165, 0.12), transparent 30rem),
     var(--bg);
 }
 
@@ -110,7 +110,7 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: rgba(167, 139, 250, 0.6);
+  border-color: rgba(175, 169, 236, 0.6);
   box-shadow: 0 0 0 3px rgba(175, 169, 236, 0.18);
 }
 
@@ -120,7 +120,7 @@ a:focus-visible,
 .category-summary:focus-visible,
 .goal-head:focus-visible,
 .planner-day:focus-visible {
-  outline: 2px solid rgba(167, 139, 250, 0.72);
+  outline: 2px solid rgba(175, 169, 236, 0.72);
   outline-offset: 3px;
 }
 
@@ -467,7 +467,7 @@ select option {
 }
 
 .date-range button:hover {
-  border-color: rgba(167, 139, 250, 0.34);
+  border-color: rgba(175, 169, 236, 0.34);
   background: rgba(255, 255, 255, 0.085);
   color: #fff;
 }
@@ -549,7 +549,7 @@ select option {
 }
 
 .insights-controls button:hover {
-  border-color: rgba(167, 139, 250, 0.34);
+  border-color: rgba(175, 169, 236, 0.34);
   background: rgba(255, 255, 255, 0.085);
   transform: translateY(-1px);
 }
@@ -583,8 +583,8 @@ select option {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 20px;
   background:
-    radial-gradient(circle at 88% 16%, rgba(167, 139, 250, 0.075), transparent 27%),
-    linear-gradient(135deg, rgba(175, 169, 236, 0.12), rgba(34, 211, 238, 0.045)),
+    radial-gradient(circle at 88% 16%, rgba(175, 169, 236, 0.075), transparent 27%),
+    linear-gradient(135deg, rgba(175, 169, 236, 0.12), rgba(93, 202, 165, 0.045)),
     rgba(255, 255, 255, 0.035);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
   opacity: 0.6;
@@ -599,7 +599,7 @@ select option {
 .insight-slide-food {
   background:
     radial-gradient(circle at 88% 18%, rgba(93, 202, 165, 0.06), transparent 27%),
-    linear-gradient(135deg, rgba(14, 165, 233, 0.09), rgba(20, 184, 166, 0.04)),
+    linear-gradient(135deg, rgba(93, 150, 236, 0.09), rgba(93, 202, 165, 0.04)),
     rgba(255, 255, 255, 0.035);
 }
 
@@ -653,7 +653,7 @@ select option {
   height: 68px;
   border-radius: 50%;
   background:
-    radial-gradient(circle, rgba(12, 17, 28, 0.58) 0 56%, transparent 57%),
+    radial-gradient(circle, rgba(10, 10, 10, 0.58) 0 56%, transparent 57%),
     conic-gradient(#fff calc(var(--ring) * 1%), rgba(255, 255, 255, 0.22) 0);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
@@ -827,21 +827,28 @@ select option {
 
 .meter {
   grid-column: 1 / -1;
-  height: 7px;
+  height: 6px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .meter i {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--green), var(--teal));
+  background: var(--green);
 }
 
 .rose-meter i {
-  background: linear-gradient(90deg, var(--rose), var(--amber));
+  background: var(--rose);
+}
+
+.meter-caption {
+  display: block;
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 11px;
 }
 
 .record-list {
@@ -920,7 +927,7 @@ select option {
 }
 
 .operation-record:focus-visible {
-  outline: 2px solid rgba(167, 139, 250, 0.78);
+  outline: 2px solid rgba(175, 169, 236, 0.78);
   outline-offset: 2px;
 }
 
@@ -937,7 +944,7 @@ select option {
   border: 1px dashed rgba(255, 255, 255, 0.16);
   border-radius: 16px;
   background:
-    linear-gradient(135deg, rgba(167, 139, 250, 0.06), transparent),
+    linear-gradient(135deg, rgba(175, 169, 236, 0.06), transparent),
     rgba(255, 255, 255, 0.035);
   color: #dbe4f0;
   text-align: center;
@@ -973,7 +980,7 @@ select option {
 }
 
 .category-card.is-selected {
-  border-color: rgba(167, 139, 250, 0.45);
+  border-color: rgba(175, 169, 236, 0.45);
   background: rgba(175, 169, 236, 0.14);
 }
 
@@ -1094,7 +1101,7 @@ select option {
 }
 
 .icon-picker-grid button.is-selected {
-  border-color: rgba(167, 139, 250, 0.55);
+  border-color: rgba(175, 169, 236, 0.55);
   background: rgba(175, 169, 236, 0.2);
   color: var(--violet-light);
 }
@@ -1743,7 +1750,7 @@ select option {
 
 .planner-day:hover,
 .planner-day.is-selected {
-  border-color: rgba(167, 139, 250, 0.45);
+  border-color: rgba(175, 169, 236, 0.45);
   background: rgba(175, 169, 236, 0.16);
   transform: translateY(-1px);
 }
@@ -1753,7 +1760,7 @@ select option {
 }
 
 .planner-day.is-selected {
-  box-shadow: inset 0 0 0 1px rgba(167, 139, 250, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(175, 169, 236, 0.18);
 }
 
 .planner-day.is-today b {
@@ -2002,7 +2009,7 @@ select option {
   padding: 7px 9px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: rgba(12, 17, 28, 0.96);
+  background: rgba(10, 10, 10, 0.96);
   color: var(--text);
   font-size: 11px;
   opacity: 0;
@@ -2489,7 +2496,7 @@ select option {
 }
 
 .avatar.danil {
-  background: var(--owner-danil-bg, rgba(167, 139, 250, 0.18));
+  background: var(--owner-danil-bg, rgba(175, 169, 236, 0.18));
   color: var(--owner-danil-color, var(--violet));
 }
 
@@ -2889,7 +2896,7 @@ select option {
 @media (min-width: 901px) {
   .app-modal-body {
     padding-right: 12px;
-    scrollbar-color: rgba(167, 139, 250, 0.4) transparent;
+    scrollbar-color: rgba(175, 169, 236, 0.4) transparent;
     scrollbar-width: thin;
   }
 
@@ -2900,7 +2907,7 @@ select option {
 
   .app-modal-body::-webkit-scrollbar-thumb {
     border-radius: 999px;
-    background: rgba(167, 139, 250, 0.4);
+    background: rgba(175, 169, 236, 0.4);
   }
 }
 
@@ -2949,7 +2956,7 @@ select option {
 .danger-button {
   border-color: rgba(240, 153, 123, 0.28);
   background:
-    linear-gradient(135deg, rgba(240, 153, 123, 0.22), rgba(244, 63, 94, 0.16)),
+    linear-gradient(135deg, rgba(240, 153, 123, 0.22), rgba(240, 153, 123, 0.16)),
     rgba(255, 255, 255, 0.06);
   color: #fff;
 }
@@ -2985,7 +2992,7 @@ select option {
   padding: 13px 14px;
   border: 1px solid var(--line);
   border-radius: 16px;
-  background: rgba(17, 24, 39, 0.96);
+  background: rgba(22, 22, 28, 0.96);
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32);
   opacity: 0;
   transform: translateY(8px);
@@ -3304,7 +3311,7 @@ button.is-pending::after {
 }
 
 .field select:focus {
-  border-color: rgba(167, 139, 250, 0.6);
+  border-color: rgba(175, 169, 236, 0.6);
   box-shadow: 0 0 0 3px rgba(175, 169, 236, 0.18);
   outline: none;
 }
@@ -3423,7 +3430,7 @@ button.is-pending::after {
 }
 
 .choice-control[aria-expanded="true"] {
-  border-color: rgba(167, 139, 250, 0.6);
+  border-color: rgba(175, 169, 236, 0.6);
   box-shadow: 0 0 0 3px rgba(175, 169, 236, 0.18);
 }
 
@@ -3567,7 +3574,7 @@ button.is-pending::after {
   position: sticky;
   bottom: 0;
   padding-top: 8px;
-  background: linear-gradient(180deg, rgba(21, 29, 46, 0), rgba(21, 29, 46, 0.98) 35%);
+  background: linear-gradient(180deg, rgba(22, 22, 28, 0), rgba(22, 22, 28, 0.98) 35%);
 }
 
 .form-actions .button,
@@ -3584,9 +3591,9 @@ button.is-pending::after {
   overflow: hidden;
   border-radius: 24px;
   background:
-    radial-gradient(circle at 50% -10%, rgba(167, 139, 250, 0.2), transparent 18rem),
+    radial-gradient(circle at 50% -10%, rgba(175, 169, 236, 0.2), transparent 18rem),
     linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 28%),
-    rgba(16, 22, 34, 0.98);
+    rgba(22, 22, 28, 0.98);
 }
 
 .operation-panel,
@@ -3728,7 +3735,7 @@ button.is-pending::after {
 .category-orb.green { background: rgba(93, 202, 165, 0.15); color: var(--green); }
 .category-orb.rose { background: rgba(240, 153, 123, 0.15); color: var(--rose); }
 .category-orb.teal { background: rgba(93, 202, 165, 0.14); color: var(--teal); }
-.category-orb.violet { background: rgba(167, 139, 250, 0.16); color: var(--violet); }
+.category-orb.violet { background: rgba(175, 169, 236, 0.16); color: var(--violet); }
 .category-orb.amber { background: rgba(250, 199, 117, 0.14); color: var(--amber); }
 
 .amount-display {
@@ -3896,7 +3903,7 @@ button.is-pending::after {
   padding: 12px;
   border: 1px solid var(--line);
   border-radius: 16px;
-  background: rgba(15, 20, 33, 0.98);
+  background: rgba(22, 22, 28, 0.98);
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.34);
   animation: editorDrop 0.18s ease both;
 }
@@ -3926,7 +3933,7 @@ button.is-pending::after {
 }
 
 .operation-comment-card textarea:focus {
-  border-color: rgba(167, 139, 250, 0.5);
+  border-color: rgba(175, 169, 236, 0.5);
   box-shadow: 0 0 0 3px rgba(175, 169, 236, 0.18);
 }
 
@@ -4008,7 +4015,7 @@ button.is-pending::after {
   bottom: -22px;
   z-index: 2;
   padding: 10px 0 0;
-  background: linear-gradient(180deg, rgba(16, 22, 34, 0), rgba(16, 22, 34, 0.98) 34%);
+  background: linear-gradient(180deg, rgba(22, 22, 28, 0), rgba(22, 22, 28, 0.98) 34%);
 }
 
 .operation-save {
@@ -4133,7 +4140,7 @@ button.is-pending::after {
   padding: 14px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 24px;
-  background: rgba(15, 20, 33, 0.98);
+  background: rgba(22, 22, 28, 0.98);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.44);
   animation: sheetUp 0.22s ease both;
 }
@@ -4191,7 +4198,7 @@ button.is-pending::after {
 
 .subcategory-popover-list button:hover {
   transform: translateY(-1px);
-  border-color: rgba(167, 139, 250, 0.34);
+  border-color: rgba(175, 169, 236, 0.34);
   background: rgba(175, 169, 236, 0.16);
 }
 
