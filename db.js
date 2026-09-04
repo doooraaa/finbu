@@ -1,5 +1,5 @@
 // ============================================================================
-// FamBu data layer — IndexedDB
+// Finbu data layer — IndexedDB
 // ----------------------------------------------------------------------------
 // Единственный источник правды для всего приложения. Ни одна страница не должна
 // хранить данные в DOM/переменных — только читать/писать через функции ниже.
@@ -238,9 +238,9 @@ export async function listTransactions({ from, to, type, categoryId, userId } = 
 // ----------------------------------------------------------------------------
 
 /** Баланс/доходы/расходы/свободно за период — карточки на Главной. */
-export async function getSummary({ from, to } = {}) {
+export async function getSummary({ from, to, userId } = {}) {
   const [items, recurringPayments] = await Promise.all([
-    listTransactions({ from, to }),
+    listTransactions({ from, to, userId }),
     getAll('recurringPayments'),
   ]);
   const income = items.filter((t) => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
@@ -249,6 +249,7 @@ export async function getSummary({ from, to } = {}) {
   const reserved = recurringPayments
     .filter((payment) => payment.nextDate)
     .filter((payment) => !payment.paidAt)
+    .filter((payment) => (!userId || payment.userId === userId))
     .filter((payment) => (!from || payment.nextDate >= from) && (!to || payment.nextDate <= to))
     .reduce((sum, payment) => sum + (Number(payment.amount) || 0), 0);
   return {
@@ -435,13 +436,13 @@ export async function seedIfEmpty() {
   await Promise.all([put('users', danil), put('users', yulya)]);
 
   const categories = [
-    { id: 'cat-salary', name: 'Зарплата', type: 'income', tone: 'green', icon: '💼' },
-    { id: 'cat-freelance', name: 'Фриланс', type: 'income', tone: 'teal', icon: '💻' },
-    { id: 'cat-gifts-in', name: 'Подарки', type: 'income', tone: 'violet', icon: '🎁' },
-    { id: 'cat-food', name: 'Еда', type: 'expense', tone: 'rose', icon: '🍽️' },
-    { id: 'cat-transport', name: 'Транспорт', type: 'expense', tone: 'amber', icon: '🚕' },
-    { id: 'cat-home', name: 'Дом', type: 'expense', tone: 'violet', icon: '🏠' },
-    { id: 'cat-health', name: 'Здоровье', type: 'expense', tone: 'teal', icon: '💊' },
+    { id: 'cat-salary', name: 'Зарплата', type: 'income', tone: 'green', icon: 'briefcase' },
+    { id: 'cat-freelance', name: 'Фриланс', type: 'income', tone: 'teal', icon: 'laptop' },
+    { id: 'cat-gifts-in', name: 'Подарки', type: 'income', tone: 'violet', icon: 'gift' },
+    { id: 'cat-food', name: 'Еда', type: 'expense', tone: 'rose', icon: 'kitchen' },
+    { id: 'cat-transport', name: 'Транспорт', type: 'expense', tone: 'amber', icon: 'car' },
+    { id: 'cat-home', name: 'Дом', type: 'expense', tone: 'violet', icon: 'home' },
+    { id: 'cat-health', name: 'Здоровье', type: 'expense', tone: 'teal', icon: 'pill' },
   ];
   await Promise.all(categories.map((c) => put('categories', c)));
 
@@ -489,6 +490,8 @@ export async function seedIfEmpty() {
   const recurringPayments = [
     { title: 'Аренда квартиры', amount: 45000, userId: 'user-danil', categoryLabel: 'Дом', periodicity: 'ежемесячно', nextDate: '2026-08-04' },
     { title: 'Домашний интернет и мобильная связь', amount: 2400, userId: 'user-yulya', categoryLabel: 'Связь', periodicity: 'ежемесячно', nextDate: '2026-08-09' },
+    { title: 'Зарплата', amount: 180000, userId: 'user-danil', categoryLabel: 'Зарплата', flow: 'income', periodicity: 'ежемесячно', nextDate: '2026-09-01' },
+    { title: 'Фриланс', amount: 32000, userId: 'user-yulya', categoryLabel: 'Фриланс', flow: 'income', periodicity: 'ежемесячно', nextDate: '2026-09-05' },
     { title: 'Подписки: музыка, кино и облако', amount: 1690, userId: 'user-danil', categoryLabel: 'Подписки', periodicity: 'ежемесячно', nextDate: '2026-08-16', paidAt: '2026-08-01' },
   ];
   await Promise.all(recurringPayments.map((p) => put('recurringPayments', p)));
