@@ -459,9 +459,9 @@ export async function seedIfEmpty() {
 
   const banks = [
     { id: 'bank-tbank', name: 'Т-Банк', color: '#fde047' },
-    { id: 'bank-sber', name: 'Сбер', color: '#6ee7b7' },
+    { id: 'bank-sber', name: 'Сбер', color: '#21a038' },
     { id: 'bank-vtb', name: 'ВТБ', color: '#60a5fa' },
-    { id: 'bank-dns', name: 'DNS Банк', color: '#5eead4' },
+    { id: 'bank-dns', name: 'DNS Банк', color: '#38bdf8' },
     { id: 'bank-dom', name: 'Дом РФ', color: '#c4b5fd' },
     { id: 'bank-mebel', name: 'МебельМаркет Банк', color: '#86efac' },
   ];

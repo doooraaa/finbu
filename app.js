@@ -2316,7 +2316,7 @@ async function openLoanEditor(id) {
   openEditorById('creditsEditor', { mode: 'edit' });
 }
 
-const TONE_HEX = { violet: '#a78bfa', teal: '#5eead4', green: '#6ee7b7', rose: '#fda4af', amber: '#fde68a' };
+const TONE_HEX = { violet: '#afa9ec', teal: '#5dcaa5', green: '#5d96ec', rose: '#f0997b', amber: '#fac775' };
 const TONE_BG = {
   violet: 'rgba(167, 139, 250, 0.18)',
   teal: 'rgba(94, 234, 212, 0.16)',
@@ -2452,7 +2452,7 @@ async function renderBanksSettings() {
 function resetBankEditor() {
   document.querySelector('#bankEditingId').value = '';
   document.querySelector('#bankNameInput').value = 'Новый банк';
-  document.querySelector('#bankColorInput').value = '#a78bfa';
+  document.querySelector('#bankColorInput').value = '#afa9ec';
   const logoInput = document.querySelector('#bankLogoInput');
   if (logoInput) logoInput.value = '';
 }
@@ -2468,7 +2468,7 @@ async function openBankEditor(id) {
 
 async function saveBankDraft() {
   const name = document.querySelector('#bankNameInput')?.value.trim();
-  const color = document.querySelector('#bankColorInput')?.value || '#a78bfa';
+  const color = document.querySelector('#bankColorInput')?.value || '#afa9ec';
   const editingId = document.querySelector('#bankEditingId')?.value;
   const logoFile = document.querySelector('#bankLogoInput')?.files?.[0];
 

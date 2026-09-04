@@ -36,23 +36,6 @@
             <button class="button desktop-action" type="button" data-action="open-sheet">Добавить</button>
           </header>
 
-          <div class="owner-filter-pills" id="dashboardOwnerFilter">
-            <button class="is-active" type="button" data-action="cycle-owner-filter" data-scope="dashboard">Все</button>
-            <button type="button" data-action="cycle-owner-filter" data-scope="dashboard" data-user="user-danil">Данил</button>
-            <button type="button" data-action="cycle-owner-filter" data-scope="dashboard" data-user="user-yulya">Юля</button>
-          </div>
-
-          <div class="free-amount-display">
-            <span class="pill">Свободно за этот месяц</span>
-            <div class="amount" data-summary="free">75 300 ₽</div>
-          </div>
-
-          <div class="summary-pills">
-            <span class="pill green"><span class="icon">↓</span> <span data-summary="income">312 000 ₽</span></span>
-            <span class="pill rose"><span class="icon">↑</span> <span data-summary="expense">125 580 ₽</span></span>
-            <span class="pill violet"><span class="icon">∑</span> <span data-summary="balance">248 500 ₽</span></span>
-          </div>
-
           <div class="date-range-wrap">
             <div class="date-range" aria-label="Диапазон дат">
               <button class="is-active" type="button" data-action="select-period" data-period="thisMonth">Этот месяц</button>
@@ -76,7 +59,55 @@
             </div>
           </div>
 
+          <section class="grid stats" aria-label="Финансовая сводка">
+            <article class="card stat-card">
+              <span class="label">Баланс</span>
+              <div class="value" data-summary="balance">248 500 ₽</div>
+            </article>
+            <article class="card stat-card">
+              <span class="label">Доходы</span>
+              <div class="value green" data-summary="income">312 000 ₽</div>
+            </article>
+            <article class="card stat-card">
+              <span class="label">Расходы</span>
+              <div class="value rose" data-summary="expense">125 580 ₽</div>
+            </article>
+            <article class="card stat-card">
+              <span class="label">Свободно</span>
+              <div class="value teal" data-summary="free">37 400 ₽</div>
+            </article>
+          </section>
+
           <section class="dash-grid dashboard-lists">
+            <article class="card">
+              <div class="between">
+                <b>Ближайшие платежи</b>
+                <span class="badge">2 недели</span>
+              </div>
+              <div id="upcomingPaymentsList">
+                <div class="payment is-urgent"><span>Ипотека</span><b>45 000 ₽</b><small>4 августа · Данил</small></div>
+                <div class="payment is-warning"><span>Кредитная карта</span><b>21 300 ₽</b><small>7 августа · Данил</small></div>
+                <div class="payment"><span>Интернет</span><b>1 200 ₽</b><small>9 августа · Юля</small></div>
+                <div class="payment"><span>Детский сад</span><b>8 000 ₽</b><small>12.08 · Юля</small></div>
+              </div>
+              <div class="ui-state empty-state" id="upcomingPaymentsEmpty" hidden><b>Ближайших платежей нет</b><small>Все обязательные платежи оплачены или не запланированы.</small></div>
+              <div class="payment-legend"><span><i class="legend-dot rose-bg"></i>&lt; 3 дня</span><span><i class="legend-dot amber-bg"></i>&lt; 7 дней</span><span><i class="legend-dot neutral-bg"></i>7+ дней</span></div>
+              <button class="ghost-button dashboard-link-button" type="button" data-action="show-screen" data-screen="recurring">Все платежи</button>
+            </article>
+
+            <article class="card">
+              <div class="between">
+                <b>Напоминания</b>
+                <span class="badge">Этот месяц</span>
+              </div>
+              <div id="dashboardRemindersList">
+                <div class="payment is-warning"><span>Оплатить интернет</span><b>25 августа</b><small>Каждый месяц · Юля</small></div>
+                <div class="payment"><span>Сверить семейный бюджет</span><b>30 августа</b><small>Каждую неделю · Оба</small></div>
+              </div>
+              <div class="ui-state empty-state" id="dashboardRemindersEmpty" hidden><b>Напоминаний нет</b><small>На этот месяц ничего не запланировано.</small></div>
+              <button class="ghost-button dashboard-link-button" type="button" data-action="show-screen" data-screen="reminders">Все напоминания</button>
+            </article>
+
             <section class="card insights-widget" data-insights-slider aria-label="Инсайты">
               <div class="between insights-head">
                 <b>Инсайты</b>
@@ -107,35 +138,6 @@
               </div>
               <div class="ui-state empty-state insights-empty" hidden><b>Инсайтов пока нет</b><small>Когда появятся важные финансовые события, они будут показаны здесь.</small></div>
             </section>
-
-            <article class="card">
-              <div class="between">
-                <b>Ближайшие платежи</b>
-                <span class="badge">2 недели</span>
-              </div>
-              <div id="upcomingPaymentsList">
-                <div class="payment is-urgent"><span>Ипотека</span><b>45 000 ₽</b><small>4 августа · Данил</small></div>
-                <div class="payment is-warning"><span>Кредитная карта</span><b>21 300 ₽</b><small>7 августа · Данил</small></div>
-                <div class="payment"><span>Интернет</span><b>1 200 ₽</b><small>9 августа · Юля</small></div>
-                <div class="payment"><span>Детский сад</span><b>8 000 ₽</b><small>12.08 · Юля</small></div>
-              </div>
-              <div class="ui-state empty-state" id="upcomingPaymentsEmpty" hidden><b>Ближайших платежей нет</b><small>Все обязательные платежи оплачены или не запланированы.</small></div>
-              <div class="payment-legend"><span><i class="legend-dot rose-bg"></i>&lt; 3 дня</span><span><i class="legend-dot amber-bg"></i>&lt; 7 дней</span><span><i class="legend-dot neutral-bg"></i>7+ дней</span></div>
-              <button class="ghost-button dashboard-link-button" type="button" data-action="show-screen" data-screen="recurring">Все платежи</button>
-            </article>
-
-            <article class="card">
-              <div class="between">
-                <b>Напоминания</b>
-                <span class="badge">Этот месяц</span>
-              </div>
-              <div id="dashboardRemindersList">
-                <div class="payment is-warning"><span>Оплатить интернет</span><b>25 августа</b><small>Каждый месяц · Юля</small></div>
-                <div class="payment"><span>Сверить семейный бюджет</span><b>30 августа</b><small>Каждую неделю · Оба</small></div>
-              </div>
-              <div class="ui-state empty-state" id="dashboardRemindersEmpty" hidden><b>Напоминаний нет</b><small>На этот месяц ничего не запланировано.</small></div>
-              <button class="ghost-button dashboard-link-button" type="button" data-action="show-screen" data-screen="reminders">Все напоминания</button>
-            </article>
 
             <article class="card operations" id="recentOperationsCard">
               <div class="between">
@@ -570,11 +572,6 @@
           </article>
         </section>
 
-        <div class="category-tools under-stats-action">
-          <span></span>
-          <button class="button" type="button" data-action="toggle-editor" data-target="creditsEditor">Добавить запись</button>
-        </div>
-
         <section class="card finance-editor floating-editor" id="creditsEditor" hidden>
           <div class="between"><b>Создание и редактирование</b><span class="badge">UI</span></div>
           <input type="hidden" id="creditEditingId" value="">
@@ -618,6 +615,8 @@
             </div>
           </article>
         </section>
+
+        <button class="ghost-button dashed-add-button" type="button" data-action="toggle-editor" data-target="creditsEditor">Добавить запись</button>
       </section>
 
       <section class="screen" id="recurringScreen" aria-labelledby="recurringTitle">
@@ -632,10 +631,6 @@
           <article class="card stat-card"><span class="label">Оплачено за текущий месяц</span><div class="value green" data-recurring-summary="paid">14 200 ₽</div></article>
         </section>
 
-        <div class="category-tools under-stats-action">
-          <span></span>
-          <button class="button" type="button" data-action="toggle-editor" data-target="recurringEditor">Добавить запись</button>
-        </div>
         <div class="payment-legend recurring-payment-legend"><span><i class="legend-dot rose-bg"></i>&lt; 3 дня</span><span><i class="legend-dot amber-bg"></i>&lt; 7 дней</span><span><i class="legend-dot neutral-bg"></i>7+ дней</span></div>
 
         <aside class="card finance-editor floating-editor" id="recurringEditor" hidden>
@@ -657,6 +652,8 @@
             <div class="ui-state empty-state" hidden><b>Обязательных платежей пока нет</b><small>Регулярные счета появятся здесь после создания.</small></div>
           </div>
         </section>
+
+        <button class="ghost-button dashed-add-button" type="button" data-action="toggle-editor" data-target="recurringEditor">Добавить платёж</button>
       </section>
 
       <section class="screen" id="calendarScreen" aria-labelledby="calendarTitlePage">
@@ -708,9 +705,6 @@
         <header class="head page-head">
           <div><h1 class="title" id="goalsTitle">Цели</h1></div>
         </header>
-        <div class="under-title-action">
-          <button class="button add-entry-button" type="button" data-action="toggle-editor" data-target="goalsEditor">Добавить запись</button>
-        </div>
         <section class="card finance-editor floating-editor" id="goalsEditor" hidden>
           <div class="between"><b>Новая цель</b><span class="badge">UI</span></div>
           <input type="hidden" id="goalEditingId" value="">
@@ -725,6 +719,7 @@
         <section class="goal-grid" id="goalsList">
           <div class="ui-state empty-state" hidden><b>Целей пока нет</b><small>Совместные цели появятся здесь после создания.</small></div>
         </section>
+        <button class="ghost-button dashed-add-button" type="button" data-action="toggle-editor" data-target="goalsEditor">Добавить цель</button>
       </section>
 
       <section class="screen" id="analyticsScreen" aria-labelledby="analyticsTitle">
@@ -829,11 +824,6 @@
           <article class="card stat-card"><span class="label">Выполнено</span><div class="value green" data-reminders-summary="completed">0</div></article>
         </section>
 
-        <div class="category-tools under-stats-action">
-          <span></span>
-          <button class="button" type="button" data-action="toggle-editor" data-target="reminderEditor">Добавить запись</button>
-        </div>
-
         <aside class="card finance-editor floating-editor reminder-editor" id="reminderEditor" hidden>
           <b>Новое напоминание</b>
           <input type="hidden" id="reminderEditingId" value="">
@@ -863,6 +853,8 @@
             <div class="ui-state empty-state" id="completedRemindersEmpty" hidden><b>Пока пусто</b><small>Выполненные напоминания останутся здесь для контроля.</small></div>
           </article>
         </section>
+
+        <button class="ghost-button dashed-add-button" type="button" data-action="toggle-editor" data-target="reminderEditor">Добавить напоминание</button>
       </section>
 
       <section class="screen" id="settingsScreen" aria-labelledby="settingsTitle">
@@ -889,7 +881,7 @@
               <input type="hidden" id="bankEditingId" value="">
               <div class="form-grid">
                 <label class="field"><span>Название банка</span><input type="text" id="bankNameInput" value="Новый банк"></label>
-                <label class="field"><span>Фирменный цвет</span><input type="color" id="bankColorInput" value="#a78bfa"></label>
+                <label class="field"><span>Фирменный цвет</span><input type="color" id="bankColorInput" value="#afa9ec"></label>
                 <label class="field"><span>Логотип</span><input type="file" accept="image/*" id="bankLogoInput"></label>
               </div>
               <div class="button-stack inline-buttons"><button class="button" type="button" data-action="save-finance-draft">Сохранить банк</button><small class="muted" data-draft-status>Форма готова</small></div>
