@@ -497,6 +497,58 @@ select option {
   transform: translateY(-2px);
 }
 
+.hero-balance-label {
+  text-align: center;
+  margin-top: 18px;
+}
+
+.hero-balance-label .pill {
+  display: inline-block;
+  padding: 7px 16px;
+}
+
+.hero-balance-label b {
+  color: #fff;
+  font-weight: 500;
+}
+
+.hero-balance {
+  margin: 14px 0;
+  text-align: center;
+  font-size: 44px;
+  font-weight: 500;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-chips {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: var(--pill);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.hero-chip .ui-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.hero-chip.green { color: var(--green); }
+.hero-chip.rose { color: var(--rose); }
+.hero-chip.violet { color: var(--violet); }
+
 .dash-grid {
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
