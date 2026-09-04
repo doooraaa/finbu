@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="#16161c"/>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="none" stroke="#2a2a33" stroke-width="10"/>
+  <circle cx="256" cy="238" r="118" fill="#f5c518"/>
+  <circle cx="256" cy="238" r="118" fill="none" stroke="#0c0c10" stroke-width="10" opacity="0.25"/>
+  <text x="256" y="292" font-family="DejaVu Sans, Arial, sans-serif" font-size="150" font-weight="bold" text-anchor="middle" fill="#16161c">₽</text>
+  <rect x="148" y="392" width="216" height="26" rx="13" fill="#f5c518" opacity="0.85"/>
+</svg>

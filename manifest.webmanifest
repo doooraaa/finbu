@@ -1,6 +1,6 @@
 {
-  "name": "FamBu",
-  "short_name": "FamBu",
+  "name": "Finbu",
+  "short_name": "Finbu",
   "description": "Семейный бюджет для двух пользователей",
   "start_url": "./index.html",
   "display": "standalone",
