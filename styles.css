@@ -5442,3 +5442,19 @@ button.pill { border: 0; font-family: inherit; cursor: pointer; }
 #goalsScreen .goal-card .amount { font-size: 14px; }
 #goalsScreen .goal-card .progress { margin: 0; }
 #goalsScreen > .btn-ghost.dashed { margin-bottom: 0; }
+
+/* --- Статистика: обзор по мокапу --- */
+#analyticsScreen .title { font-size: 24px; margin: 0 0 16px; }
+#analyticsScreen [data-stats-pane="overview"] { line-height: 1.3; }
+#analyticsScreen .stats-month-name { font-size: 19px; font-weight: 500; margin: 0 0 4px; }
+#analyticsScreen .stats-gap-lg { margin-bottom: 16px; }
+#analyticsScreen .stats-gap-0 { margin-bottom: 0; }
+#analyticsScreen .stats-bars-title { margin-bottom: 12px; }
+#analyticsScreen .stats-bar-row { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+#analyticsScreen .stats-bar-row p { font-size: 13px; margin: 0; }
+#analyticsScreen .stats-bar-row p:first-child { color: #fff; }
+#analyticsScreen .stats-bar-row p:last-child { color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+#analyticsScreen .stats-bars > :last-child { margin-bottom: 0; }
+#analyticsScreen .stats-ops-count { font-size: 16px; font-weight: 500; color: #fff; margin: 0; }
+#analyticsScreen .stats-top-card .title-sm { margin-bottom: 2px; }
+#analyticsScreen .stats-top-card .badge { font-size: 18px; }

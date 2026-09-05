@@ -583,23 +583,46 @@
         </div>
 
         <section class="stats-pane is-active" data-stats-pane="overview">
-          <section class="grid-2 stat-pair" aria-label="Лучший и худший месяц">
-            <article class="card stat-mini"><span class="label">Самый прибыльный месяц</span><div class="stat-mini-value t-green" data-stat="best-month-name">—</div><small class="muted" data-stat="best-month-value">—</small></article>
-            <article class="card stat-mini"><span class="label">Самый затратный месяц</span><div class="stat-mini-value t-coral" data-stat="worst-month-name">—</div><small class="muted" data-stat="worst-month-value">—</small></article>
+          <article class="card">
+            <p class="title-sm">Самый прибыльный месяц</p>
+            <p class="stats-month-name t-green" data-stat="best-month-name">—</p>
+            <p class="meta" data-stat="best-month-value">—</p>
+          </article>
+          <article class="card stats-gap-lg">
+            <p class="title-sm">Самый затратный месяц</p>
+            <p class="stats-month-name t-coral" data-stat="worst-month-name">—</p>
+            <p class="meta" data-stat="worst-month-value">—</p>
+          </article>
+          <article class="card">
+            <p class="name stats-bars-title">Доходы по категориям</p>
+            <div class="stats-bars" id="statsIncomeBars"></div>
+          </article>
+          <article class="card stats-gap-lg">
+            <p class="name stats-bars-title">Расходы по категориям</p>
+            <div class="stats-bars" id="statsExpenseBars"></div>
+          </article>
+          <section class="grid-2 stat-pair metrics-grid" aria-label="Максимумы">
+            <article class="card stat-mini"><p class="title-sm">Макс. доход</p><div class="stat-mini-value t-green" data-stat="max-income-value">—</div></article>
+            <article class="card stat-mini"><p class="title-sm">Макс. расход</p><div class="stat-mini-value t-coral" data-stat="max-expense-value">—</div></article>
           </section>
-          <section class="analytics-grid">
-            <article class="card chart-card"><b>Доходы по категориям</b><div class="category-bars" id="statsIncomeBars"></div></article>
-            <article class="card chart-card"><b>Расходы по категориям</b><div class="category-bars" id="statsExpenseBars"></div></article>
+          <section class="grid-2 stat-pair metrics-grid" aria-label="Средние за день">
+            <article class="card stat-mini"><p class="title-sm">Средн. доход/день</p><div class="stat-mini-value t-green" data-stat="avg-income-value">—</div></article>
+            <article class="card stat-mini"><p class="title-sm">Средн. расход/день</p><div class="stat-mini-value t-coral" data-stat="avg-expense-value">—</div></article>
           </section>
-          <section class="grid-2 stat-pair metrics-grid">
-            <article class="card stat-mini"><span class="label">Макс. доход</span><div class="stat-mini-value t-green" data-stat="max-income-value">—</div><small class="muted" data-stat="max-income-name">—</small></article>
-            <article class="card stat-mini"><span class="label">Макс. расход</span><div class="stat-mini-value t-coral" data-stat="max-expense-value">—</div><small class="muted" data-stat="max-expense-name">—</small></article>
-            <article class="card stat-mini"><span class="label">Средн. доход/день</span><div class="stat-mini-value t-green" data-stat="avg-income-value">—</div><small class="muted" data-stat="period-label-1">—</small></article>
-            <article class="card stat-mini"><span class="label">Средн. расход/день</span><div class="stat-mini-value t-coral" data-stat="avg-expense-value">—</div><small class="muted" data-stat="period-label-2">—</small></article>
-            <article class="card stat-mini"><span class="label">Операций за период</span><div class="stat-mini-value" data-stat="operations-count">—</div><small class="muted">операций</small></article>
-            <article class="card stat-mini"><span class="label">Крупнейшая категория доходов</span><div class="stat-mini-value t-green" data-stat="top-income-category-value">—</div><small class="muted" data-stat="top-income-category-name">—</small></article>
-            <article class="card stat-mini"><span class="label">Крупнейшая категория расходов</span><div class="stat-mini-value t-coral" data-stat="top-expense-category-value">—</div><small class="muted" data-stat="top-expense-category-name">—</small></article>
-          </section>
+          <article class="card">
+            <p class="title-sm">Операций за период</p>
+            <p class="stats-ops-count" data-stat="operations-count">—</p>
+          </article>
+          <article class="card row stats-top-card">
+            <div class="badge" data-stat-badge="top-income"></div>
+            <div class="row-1"><p class="title-sm">Крупнейшая категория доходов</p><p class="name" data-stat="top-income-category-name">—</p></div>
+            <p class="amount t-green" data-stat="top-income-category-value">—</p>
+          </article>
+          <article class="card row stats-top-card stats-gap-0">
+            <div class="badge" data-stat-badge="top-expense"></div>
+            <div class="row-1"><p class="title-sm">Крупнейшая категория расходов</p><p class="name" data-stat="top-expense-category-name">—</p></div>
+            <p class="amount t-yellow" data-stat="top-expense-category-value">—</p>
+          </article>
         </section>
 
         <section class="stats-pane" data-stats-pane="operations" hidden>

@@ -2672,9 +2672,8 @@ function renderCategoryBars(container, breakdown) {
   container.innerHTML = breakdown
     .map(
       (row) => `
-      <span style="--value:${row.percent}%; --tone: var(--${row.tone})">
-        <i></i><em><span class="category-emoji-inline">${categoryIcon(row.icon, row.name)}</span>${escapeHtml(row.name)}</em><b class="${row.tone}">${formatRub(row.amount)} (${row.percent}%)</b>
-      </span>
+      <div class="progress"><div class="progress-fill" style="width:${row.percent}%;background:var(--${row.tone})"></div></div>
+      <div class="stats-bar-row"><p>${escapeHtml(row.name)}</p><p>${formatRub(row.amount)} (${row.percent}%)</p></div>
     `
     )
     .join('');
@@ -2783,6 +2782,16 @@ async function renderStatisticsOverview() {
   setStat('top-expense-category-name', topExpense?.name ?? 'Нет данных');
   setStat('top-expense-category-value', topExpense ? formatRub(topExpense.amount) : '—');
   setStat('top-expense-category-percent', topExpense ? `${topExpense.percent}%` : '');
+  const paintTopBadge = (key, row) => {
+    const badge = document.querySelector(`[data-stat-badge="${key}"]`);
+    if (!badge) return;
+    const tone = row?.tone ?? 'violet';
+    badge.style.background = TONE_BG[tone] || TONE_BG.violet;
+    badge.style.color = TONE_HEX[tone] || TONE_HEX.violet;
+    badge.innerHTML = categoryIcon(row?.icon, row?.name ?? '');
+  };
+  paintTopBadge('top-income', topIncome);
+  paintTopBadge('top-expense', topExpense);
 
   const everything = await db.listTransactions();
   const byMonth = new Map();
