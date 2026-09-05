@@ -389,6 +389,9 @@ function renderFunctionalIcons(root = document.body) {
   });
 
   root.querySelectorAll('.record-actions button, [data-action="remove-finance-item"], [data-action="edit-category"], [data-action="delete-category"], [data-action="edit-subcategory"], [data-action="delete-subcategory"]').forEach((button) => {
+    if (button.querySelector('svg, .ui-icon')) return;
+    // Текстовые кнопки (названия категорий/подкатегорий, кнопки редактора) не затираем.
+    if (button.textContent.trim().length > 1) return;
     const label = button.getAttribute('aria-label') || button.dataset.action || button.textContent;
     const isDelete = /delete|remove|удал|×/i.test(label);
     if (!button.dataset.action && !isDelete) button.dataset.action = 'edit-record';
