@@ -4077,16 +4077,22 @@ async function renderTransactionScreen(type) {
   const total = transactions.reduce((sum, t) => sum + t.amount, 0);
 
   const totalEl = document.querySelector(`[data-page-total="${type}"]`);
-  if (totalEl) totalEl.textContent = formatRub(total);
+  if (totalEl) totalEl.textContent = (type === 'income' ? '+' : '-') + formatRub(total);
 
   const topCategory = breakdown[0];
+  const topHex = (topCategory && TONE_HEX[topCategory.tone]) || TONE_HEX.teal;
   const topNameEl = document.querySelector(`[data-top-category-name="${type}"]`);
   const topDetailEl = document.querySelector(`[data-top-category-detail="${type}"]`);
-  if (topNameEl) topNameEl.textContent = topCategory ? `${categoryEmoji(topCategory.icon, topCategory.name)} ${topCategory.name}` : '—';
+  const topBadgeEl = document.querySelector(`[data-top-category-badge="${type}"]`);
+  if (topNameEl) topNameEl.textContent = topCategory ? topCategory.name : '—';
   if (topDetailEl) {
-    topDetailEl.textContent = topCategory
-      ? `${topCategory.percent}% всех ${type === 'income' ? 'поступлений' : 'расходов'}`
-      : 'Пока нет операций за период';
+    topDetailEl.textContent = topCategory ? `${topCategory.percent}%` : 'Пока нет операций за период';
+    topDetailEl.style.color = topCategory ? topHex : '';
+  }
+  if (topBadgeEl && topCategory) {
+    topBadgeEl.style.background = TONE_BG[topCategory.tone] || TONE_BG.teal;
+    topBadgeEl.style.color = topHex;
+    topBadgeEl.innerHTML = categoryIcon(topCategory.icon, topCategory.name);
   }
 
   const rowsContainer = document.querySelector(`[data-category-rows="${type}"]`);
@@ -4096,12 +4102,13 @@ async function renderTransactionScreen(type) {
       rowsContainer.innerHTML = '<p class="muted">Пока нет операций за выбранный период.</p>';
     }
     breakdown.forEach((row) => {
+      const hex = TONE_HEX[row.tone] || TONE_HEX.teal;
+      const bg = TONE_BG[row.tone] || TONE_BG.teal;
       const el = document.createElement('div');
-      el.className = 'category-row';
+      el.className = 'card breakdown-card';
       el.innerHTML = `
-        <div><b><span class="category-emoji-inline">${categoryIcon(row.icon, row.name)}</span>${escapeHtml(row.name)}</b><small>${row.count} ${pluralizeOperations(row.count)}</small></div>
-        <strong>${formatRub(row.amount)}</strong>
-        <span class="meter${type === 'expense' ? ' rose-meter' : ''}"><i style="width:${row.percent}%"></i></span>
+        <div class="row"><div class="badge" style="background:${bg};color:${hex}">${categoryIcon(row.icon, row.name)}</div><div class="row-1"><p class="name">${escapeHtml(row.name)}</p><p class="meta">${row.count} ${pluralizeOperations(row.count)}</p></div><p class="amount">${formatRub(row.amount)}</p></div>
+        <div class="progress"><div class="progress-fill" style="width:${row.percent}%;background:${hex}"></div></div>
       `;
       rowsContainer.append(el);
     });

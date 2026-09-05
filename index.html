@@ -194,27 +194,13 @@
             <button type="button" data-action="select-period" data-period="today">Сегодня</button>
             <button type="button" data-action="select-period" data-period="yesterday">Вчера</button>
             <button type="button" data-action="select-period" data-period="7d">7 дней</button>
-            <button type="button" data-action="select-period" data-period="30d">30 дней</button>
-            <button type="button" data-action="select-period" data-period="all">Все время</button>
-            <button type="button" data-action="toggle-page-range-calendar" data-calendar="incomeRangeCalendar">Свой диапазон</button>
-          </div>
-          <div class="choice-menu calendar-menu range-calendar page-calendar" id="incomeRangeCalendar" data-page-range-calendar hidden>
-            <div class="calendar-head">
-              <button type="button" data-action="page-calendar-prev" data-calendar="incomeRangeCalendar" aria-label="Предыдущий месяц"><svg class="ti"><use href="#i-chev-l"/></svg></button>
-              <b data-calendar-title>Август 2026</b>
-              <button type="button" data-action="page-calendar-next" data-calendar="incomeRangeCalendar" aria-label="Следующий месяц"><svg class="ti"><use href="#i-chev-r"/></svg></button>
-            </div>
-            <div class="calendar-weekdays" aria-hidden="true">
-              <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
-            </div>
-            <div class="calendar-days" data-calendar-days></div>
           </div>
         </div>
 
         <p class="hero-label">Всего за период</p>
         <p class="hero-total t-green" data-page-total="income">0 ₽</p>
         <div class="card row top-card">
-          <div class="badge t-green"><svg class="ti"><use href="#i-briefcase"/></svg></div>
+          <div class="badge t-green" data-top-category-badge="income"><svg class="ti"><use href="#i-briefcase"/></svg></div>
           <div class="row-1"><p class="title-sm">Крупнейшая категория</p><p class="name" data-top-category-name="income">—</p></div>
           <p class="amount t-green" data-top-category-detail="income">—</p>
         </div>
@@ -245,27 +231,13 @@
             <button type="button" data-action="select-period" data-period="today">Сегодня</button>
             <button type="button" data-action="select-period" data-period="yesterday">Вчера</button>
             <button type="button" data-action="select-period" data-period="7d">7 дней</button>
-            <button type="button" data-action="select-period" data-period="30d">30 дней</button>
-            <button type="button" data-action="select-period" data-period="all">Все время</button>
-            <button type="button" data-action="toggle-page-range-calendar" data-calendar="expenseRangeCalendar">Свой диапазон</button>
-          </div>
-          <div class="choice-menu calendar-menu range-calendar page-calendar" id="expenseRangeCalendar" data-page-range-calendar hidden>
-            <div class="calendar-head">
-              <button type="button" data-action="page-calendar-prev" data-calendar="expenseRangeCalendar" aria-label="Предыдущий месяц"><svg class="ti"><use href="#i-chev-l"/></svg></button>
-              <b data-calendar-title>Август 2026</b>
-              <button type="button" data-action="page-calendar-next" data-calendar="expenseRangeCalendar" aria-label="Следующий месяц"><svg class="ti"><use href="#i-chev-r"/></svg></button>
-            </div>
-            <div class="calendar-weekdays" aria-hidden="true">
-              <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
-            </div>
-            <div class="calendar-days" data-calendar-days></div>
           </div>
         </div>
 
         <p class="hero-label">Всего за период</p>
         <p class="hero-total" data-page-total="expense">0 ₽</p>
         <div class="card row top-card">
-          <div class="badge t-yellow"><svg class="ti"><use href="#i-home"/></svg></div>
+          <div class="badge t-yellow" data-top-category-badge="expense"><svg class="ti"><use href="#i-home"/></svg></div>
           <div class="row-1"><p class="title-sm">Крупнейшая категория</p><p class="name" data-top-category-name="expense">—</p></div>
           <p class="amount t-yellow" data-top-category-detail="expense">—</p>
         </div>

@@ -465,6 +465,13 @@ select option {
   color: #fff;
   box-shadow: none;
 }
+.page-range button {
+  min-height: 0;
+  padding: 7px 16px;
+  font-weight: 400;
+  border-radius: 20px;
+}
+.page-range button.is-active { font-weight: 500; }
 
 .date-range button:hover {
   background: var(--pill-active);
@@ -772,7 +779,6 @@ select option {
   transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
 }
 
-.category-row,
 .record {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -784,19 +790,16 @@ select option {
   transition: background 0.18s ease, transform 0.18s ease;
 }
 
-.category-row:hover,
 .record:hover {
   background: rgba(255, 255, 255, 0.072);
 }
 
-.category-row div,
 .record div:first-child {
   display: grid;
   min-width: 0;
   gap: 2px;
 }
 
-.category-row b,
 .record b {
   min-width: 0;
   overflow: hidden;
@@ -806,13 +809,11 @@ select option {
   font-size: 13px;
 }
 
-.category-row small,
 .record small {
   color: var(--muted);
   font-size: 12px;
 }
 
-.category-row strong,
 .record strong {
   color: var(--text);
   font-variant-numeric: tabular-nums;
@@ -4939,8 +4940,16 @@ button.is-pending::after {
 #upcomingPaymentsList .row:last-child { margin-bottom: 16px; }
 #dashboardRemindersList .row { margin-bottom: 12px; }
 #dashboardRemindersList .row:last-child { margin-bottom: 20px; }
-.top-card { margin-bottom: 18px; }
+.top-card { margin-bottom: 10px; padding: 14px 16px; border-radius: 20px; }
+.top-card .title-sm { margin-bottom: 2px; }
+.top-card .badge { font-size: 18px; }
 .top-card .amount { font-size: 14px; }
+.breakdown-card { padding: 12px 14px; border-radius: 20px; margin-bottom: 10px; }
+[data-category-rows] .breakdown-card:last-child { margin-bottom: 18px; }
+.breakdown-card .row { margin-bottom: 8px; }
+.breakdown-card .badge { width: 32px; height: 32px; border-radius: 11px; font-size: 15px; }
+.breakdown-card .name, .breakdown-card .amount { font-size: 14px; }
+#dashboardScreen [data-record] .badge { font-size: 18px; }
 
 /* --- Сегменты --- */
 .owner-seg { display: flex; justify-content: center; margin-bottom: 18px; }
