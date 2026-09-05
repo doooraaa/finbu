@@ -4915,33 +4915,44 @@ button.is-pending::after {
 .dash-debt-line { text-align: center; font-size: 13px; color: var(--text-secondary); margin: 0 0 22px; }
 .dash-debt-line b, .dash-debt-line strong { color: #fff; font-weight: 500; }
 .icon-btn {
-  width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
   display: inline-flex; align-items: center; justify-content: center;
   background: var(--pill); color: #fff; border: none;
 }
-.icon-btn .ti { width: 16px; height: 16px; }
+.icon-btn .ti { width: 15px; height: 15px; }
 
 /* --- Hero главной --- */
-.hero { text-align: center; margin-bottom: 6px; }
+.hero { text-align: center; margin-bottom: 0; }
 .hero .pill { margin-bottom: 4px; }
+#dashPeriodLabel { margin-bottom: 14px; }
+#dashboardScreen [data-record] .card { padding: 14px 16px; border-radius: 20px; margin-bottom: 10px; }
+#dashboardScreen [data-screen="recurring"].btn-ghost { margin-bottom: 20px; }
+#dashboardScreen [data-screen="reminders"].btn-ghost { margin-bottom: 22px; }
 .hero-label { font-size: 13px; color: var(--text-secondary); margin: 0 0 4px; }
 .hero-amount, .hero-total { font-size: 48px; font-weight: 500; color: #fff; margin: 0 0 14px; font-variant-numeric: tabular-nums; }
 .hero-total { font-size: 38px; }
 .hero-total.t-green { color: var(--green); }
 .hero-pills { display: flex; justify-content: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
 .insights-pill { margin: 0 auto 22px; }
+#dashPeriodLabel b { color: #fff; }
+#upcomingPaymentsList .row { margin-bottom: 12px; }
+#upcomingPaymentsList .row:last-child { margin-bottom: 16px; }
+#dashboardRemindersList .row { margin-bottom: 12px; }
+#dashboardRemindersList .row:last-child { margin-bottom: 20px; }
 .top-card { margin-bottom: 18px; }
 .top-card .amount { font-size: 14px; }
 
 /* --- Сегменты --- */
 .owner-seg { display: flex; justify-content: center; margin-bottom: 18px; }
-.owner-seg > div, .owner-seg {
+.owner-seg .seg {
   display: inline-flex; background: var(--pill); border-radius: 20px; padding: 4px; gap: 0;
 }
 .owner-seg button {
   padding: 7px 16px; font-size: 12px; color: var(--text-secondary);
   background: none; border: none; border-radius: 16px; white-space: nowrap;
 }
+.owner-seg button[data-owner="user-danil"] { color: var(--name-danil); }
+.owner-seg button[data-owner="user-yulya"] { color: var(--name-yulya); }
 .owner-seg button.is-active { color: #fff; background: var(--pill-active); font-weight: 500; }
 .owner-seg button[data-owner="user-danil"].is-active { color: var(--purple); }
 .owner-seg button[data-owner="user-yulya"].is-active { color: var(--green); }
