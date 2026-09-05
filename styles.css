@@ -5517,3 +5517,32 @@ button.pill { border: 0; font-family: inherit; cursor: pointer; }
 #archiveScreen .archive-chev { width: 15px; height: 15px; color: rgba(255, 255, 255, 0.3); flex-shrink: 0; }
 #archiveScreen #archiveClosedTitle { margin-top: 12px; }
 #archiveScreen #archiveClosedList .archive-record:last-child { margin-bottom: 0; }
+
+/* --- Напоминания по мокапу --- */
+#remindersScreen .stat-pair { margin-bottom: 16px; }
+#remindersScreen .stat-mini-value { font-size: 24px; }
+#remindersScreen .reminder-card { margin-bottom: 14px; }
+#activeRemindersList .reminder-card:last-child { margin-bottom: 20px; }
+#completedRemindersList .reminder-card:last-child { margin-bottom: 0; }
+#remindersScreen .reminder-card.is-completed { opacity: 0.6; }
+#remindersScreen .reminder-card.is-completed .name { text-decoration: line-through; }
+#remindersScreen .reminder-main { background: none; border: none; padding: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+#dashboardRemindersList .row { margin-bottom: 12px; }
+#dashboardRemindersList .row:last-child { margin-bottom: 20px; }
+
+/* --- Настройки по мокапу --- */
+#settingsScreen .settings-profile .name { font-size: 16px; }
+#settingsScreen > .card-lg:last-child { margin-bottom: 0; }
+#usersList .badge { width: 32px; height: 32px; border-radius: 50%; font-size: 15px; }
+#settingsScreen .user-row { padding: 14px; }
+#usersList .row-1 { font-weight: 500; }
+#settingsScreen [data-action="open-banks"] .badge { width: 32px; height: 32px; border-radius: 11px; }
+#settingsScreen [data-action="open-banks"] .badge .ti { width: 15px; height: 15px; }
+#bankDirectory { gap: 10px; }
+#settingsScreen .bank-directory-card { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: none; border-radius: 20px; background: var(--card); margin-bottom: 0; }
+#bankDirectory .bank-logo-image { width: 38px; height: 38px; border-radius: 12px; flex-shrink: 0; }
+#bankDirectory .bank-initials { flex-shrink: 0; }
+.bank-name-btn { background: none; border: none; padding: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; min-width: 0; }
+.bank-name-btn .name, .bank-name-btn .meta { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bank-trash { width: 32px; height: 32px; border-radius: 50%; border: none; background: var(--red-bg); color: var(--red); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+.bank-trash .ti { width: 15px; height: 15px; }

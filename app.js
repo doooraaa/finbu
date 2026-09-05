@@ -1967,13 +1967,20 @@ function reminderAssigneeLabel(value, users = []) {
 
 function reminderAssigneeMarkup(value, users = []) {
   if (value === 'both') {
-    return users.map((user) => ownerMarkup(escapeHtml(user.name), user.id)).join(' · ') || 'Оба';
+    return users.map((user) => ownerMarkup(escapeHtml(user.name), user.id)).join(', ') || 'Оба';
   }
   return ownerMarkup(escapeHtml(reminderAssigneeLabel(value, users)), value);
 }
 
 function reminderRepeatLabel(reminder) {
   return REMINDER_REPEAT_LABELS[reminder.repeat] || 'Разово';
+}
+
+const reminderStripe = (reminder) => (db.getReminderStatus(reminder) === 'overdue' ? 'var(--red)' : 'rgba(255, 255, 255, 0.15)');
+
+function reminderMetaLine(reminder, users = []) {
+  if (!reminder.repeat || reminder.repeat === 'none') return 'Разовая';
+  return `${formatRuDate(reminder.nextDate).slice(0, 5)} · ${reminderRepeatLabel(reminder)} · ${reminderAssigneeMarkup(reminder.assignee, users)}`;
 }
 
 function syncReminderMonthlyField() {
@@ -2029,19 +2036,13 @@ async function renderRemindersScreen() {
   setText('#activeRemindersBadge', active.length);
   setText('#completedRemindersBadge', completed.length);
 
-  const stripeColor = (reminder) => {
-    if (db.getReminderStatus(reminder) === 'overdue') return '#f09595';
-    const first = reminder.assignee === 'both' ? users[0] : users.find((u) => u.id === reminder.assignee);
-    return (first && OWNER_COLOR_BY_TONE[first.tone]) || '#afa9ec';
-  };
   const renderCard = (reminder) => {
     const done = db.getReminderStatus(reminder) === 'completed';
-    const dateText = formatRuDate(reminder.nextDate).slice(0, 5);
     return `
-      <article class="row finance-card reminder-card" data-reminder-id="${reminder.id}" data-removable>
-        <span class="stripe" style="background:${stripeColor(reminder)}"></span>
-        <button class="finance-main row-1" type="button" data-action="open-history">
-          <p class="name">${escapeHtml(reminder.title)}</p><p class="meta">${dateText} · ${reminderRepeatLabel(reminder)} · ${reminderAssigneeMarkup(reminder.assignee, users)}</p>
+      <article class="row finance-card reminder-card${done ? ' is-completed' : ''}" data-reminder-id="${reminder.id}" data-removable>
+        <span class="stripe" style="background:${reminderStripe(reminder)}"></span>
+        <button class="reminder-main row-1" type="button" data-action="open-history">
+          <p class="name">${escapeHtml(reminder.title)}</p><p class="meta">${reminderMetaLine(reminder, users)}</p>
         </button>
         <button class="checkbox${done ? ' done' : ''}" type="button" data-action="toggle-reminder-complete" data-reminder-id="${reminder.id}" aria-label="${done ? 'Вернуть в работу' : 'Отметить выполненным'}">${done ? icon('check', 'ui-icon') : ''}</button>
       </article>
@@ -2551,7 +2552,7 @@ async function renderUsersSettings() {
       (user, index) => `
     <button class="settings-row user-row" type="button" data-action="edit-user" data-user-id="${user.id}">
       <span class="badge" style="color:${TONE_HEX[user.tone] || TONE_HEX.violet};background:${TONE_BG[user.tone] || TONE_BG.violet}">${icon('user', 'ui-icon')}</span>
-      <span class="row-1">${escapeHtml(user.name)}</span>
+      <span class="row-1" style="color:${TONE_HEX[user.tone] || TONE_HEX.violet}">${escapeHtml(user.name)}</span>
       ${index === 0 ? '<span class="meta">Вы</span>' : '<svg class="ti"><use href="#i-chev-r"/></svg>'}
     </button>
   `
@@ -2564,6 +2565,8 @@ async function renderBanksSettings() {
   const directory = document.querySelector('#bankDirectory');
   if (!directory) return;
   const [banks, cards, loans] = await Promise.all([db.getAll('banks'), db.getAll('creditCards'), db.getAll('loans')]);
+  const countLabel = document.querySelector('#banksCountLabel');
+  if (countLabel) countLabel.textContent = String(banks.length);
 
   directory.innerHTML = banks.length
     ? banks
@@ -2572,15 +2575,15 @@ async function renderBanksSettings() {
           if (cards.some((c) => c.bankId === bank.id)) usage.push('кредитных картах');
           if (loans.some((l) => l.bankId === bank.id && l.kind !== 'installment')) usage.push('кредитах');
           if (loans.some((l) => l.bankId === bank.id && l.kind === 'installment')) usage.push('рассрочках');
+          const color = bank.color || '#afa9ec';
+          const logo = bank.logoDataUrl
+            ? `<img class="bank-logo-image" src="${bank.logoDataUrl}" alt="">`
+            : `<span class="badge bank-initials" style="background:${color}26;color:${color}">${escapeHtml(bank.name.trim().slice(0, 2).toUpperCase())}</span>`;
           return `
         <div class="bank-directory-card" data-removable data-bank-id="${bank.id}">
-          ${bank.logoDataUrl ? `<img class="bank-logo-image" src="${bank.logoDataUrl}" alt="">` : '<span class="bank-logo-slot">Лого</span>'}
-          <div><b style="color:${bank.color}">${escapeHtml(bank.name)}</b><small>${usage.length ? `Используется в ${usage.join(', ')}` : 'Пока не используется'}</small></div>
-          <i style="background:${bank.color}"></i>
-          <div class="record-actions">
-            <button type="button" data-action="edit-bank" aria-label="Редактировать">✎</button>
-            <button type="button" data-action="remove-finance-item" aria-label="Удалить">×</button>
-          </div>
+          ${logo}
+          <button class="row-1 bank-name-btn" type="button" data-action="edit-bank"><span class="name">${escapeHtml(bank.name)}</span><span class="meta">${usage.length ? `Используется в ${usage.join(', ')}` : 'Пока не используется'}</span></button>
+          <button class="bank-trash" type="button" data-action="remove-finance-item" aria-label="Удалить банк"><svg class="ti"><use href="#i-trash"/></svg></button>
         </div>
       `;
         })
@@ -3884,11 +3887,9 @@ async function renderDashboardReminders() {
   if (emptyState) emptyState.hidden = reminders.length > 0;
 
   reminders.forEach((reminder) => {
-    const done = false;
-    const stripe = '#f09595';
     const row = document.createElement('div');
     row.className = 'row';
-    row.innerHTML = `<span class="stripe" style="background:${stripe}"></span><div class="row-1"><p class="name">${escapeHtml(reminder.title)}</p><p class="meta">${formatRuDate(reminder.nextDate).slice(0, 5)} · ${reminderRepeatLabel(reminder)} · ${reminderAssigneeMarkup(reminder.assignee, users)}</p></div><button class="checkbox" type="button" data-action="toggle-reminder-complete" data-reminder-id="${reminder.id}" aria-label="Отметить выполненным"></button>`;
+    row.innerHTML = `<span class="stripe" style="background:${reminderStripe(reminder)}"></span><div class="row-1"><p class="name">${escapeHtml(reminder.title)}</p><p class="meta">${reminderMetaLine(reminder, users)}</p></div><button class="checkbox" type="button" data-action="toggle-reminder-complete" data-reminder-id="${reminder.id}" aria-label="Отметить выполненным"></button>`;
     list.append(row);
   });
 }
