@@ -1766,11 +1766,24 @@ async function renderRecurringScreen() {
     db.getAll('transactions'),
     db.getAll('categories'),
   ]);
-  const thisMonth = payments.filter((p) => p.nextDate >= from && p.nextDate <= to);
+  const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const isPaidItem = (p) => db.getRecurringPaymentStatus(p, now) === 'paid';
+  const isVisible = (p) => {
+    if (!isPaidItem(p)) return true;
+    return String(p.paidAt || p.nextDate || '').slice(0, 7) === monthKey;
+  };
+  const byDate = (a, b) => String(a.nextDate || '').localeCompare(String(b.nextDate || ''));
+  const orderVisible = (arr) => [
+    ...arr.filter((p) => isVisible(p) && !isPaidItem(p)).sort(byDate),
+    ...arr.filter((p) => isVisible(p) && isPaidItem(p)).sort(byDate),
+  ];
+  const thisMonth = payments.filter((p) => String(p.nextDate || '').slice(0, 7) === monthKey);
   const paid = transactions
     .filter((transaction) => transaction.linkedType === 'recurringPayment' && transaction.date >= from && transaction.date <= to)
     .reduce((sum, transaction) => sum + transaction.amount, 0);
-  const planned = paid + thisMonth.reduce((sum, payment) => sum + remainingRecurringPayment(payment), 0);
+  const planned = thisMonth
+    .filter((p) => (p.flow || 'expense') !== 'income')
+    .reduce((sum, payment) => sum + (Number(payment.amount) || 0), 0);
 
   const plannedEl = document.querySelector('[data-recurring-summary="planned"]');
   const paidEl = document.querySelector('[data-recurring-summary="paid"]');
@@ -1780,16 +1793,16 @@ async function renderRecurringScreen() {
   const incomeList = document.querySelector('#plannedIncomeList');
   list.querySelectorAll('.recurring-card').forEach((el) => el.remove());
   incomeList?.querySelectorAll('.recurring-card').forEach((el) => el.remove());
-  const expensePayments = payments.filter((p) => (p.flow || 'expense') !== 'income');
-  const incomePayments = payments.filter((p) => (p.flow || 'expense') === 'income');
+  const expensePayments = orderVisible(payments.filter((p) => (p.flow || 'expense') !== 'income'));
+  const incomePayments = orderVisible(payments.filter((p) => (p.flow || 'expense') === 'income'));
   const emptyState = list.querySelector('.empty-state');
   if (emptyState) emptyState.hidden = expensePayments.length > 0;
   const incomeEmpty = incomeList?.querySelector('.empty-state');
   if (incomeEmpty) incomeEmpty.hidden = incomePayments.length > 0;
-  const incomePlannedSum = incomePayments.reduce((sum, p) => sum + remainingRecurringPayment(p), 0);
-  const expensePlannedSum = expensePayments.filter((p) => p.nextDate >= from && p.nextDate <= to).reduce((sum, p) => sum + remainingRecurringPayment(p), 0);
+  const incomePlannedSum = incomePayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+  const expensePlannedSum = expensePayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
   document.querySelectorAll('#recurringScreen [data-upcoming="income"]').forEach((el) => { el.textContent = '+' + formatRub(incomePlannedSum); });
-  document.querySelectorAll('#recurringScreen [data-upcoming="expense"]').forEach((el) => { el.textContent = '−' + formatRub(expensePlannedSum); });
+  document.querySelectorAll('#recurringScreen [data-upcoming="expense"]').forEach((el) => { el.textContent = '-' + formatRub(expensePlannedSum); });
 
   const users = await db.getAll('users');
   const statusMeta = {
@@ -1801,35 +1814,40 @@ async function renderRecurringScreen() {
   };
 
   [...expensePayments, ...incomePayments]
-    .sort((a, b) => a.nextDate.localeCompare(b.nextDate))
     .forEach((payment) => {
       const isIncomeFlow = (payment.flow || 'expense') === 'income';
       const status = db.getRecurringPaymentStatus(payment, now);
       const meta = statusMeta[status];
       const user = users.find((u) => u.id === payment.userId);
-      const [year, month, day] = payment.nextDate.split('-');
+      const [year, month, day] = String(payment.nextDate || '').split('-');
       const category = categories.find((item) => item.id === payment.categoryId);
       const categoryName = category?.name || payment.categoryLabel || 'Без категории';
-      const paymentIcon = categoryEmoji(category, categoryName);
 
 
 
       const isOverdue = status === 'overdue';
       const isPaid = status === 'paid';
+      const paidIso = isPaid ? String(payment.paidAt || payment.nextDate || '').slice(0, 10) : null;
+      const [payYear, payMonth, payDay] = (paidIso || '').split('-');
       const statusText = isPaid
-        ? `${isIncomeFlow ? 'Получено' : 'Оплачено'} ${day}.${month}`
+        ? isIncomeFlow
+          ? `Получено ${formatLongRuDate(paidIso)}`
+          : `Оплачено ${payDay}.${payMonth}`
         : isOverdue
           ? `Просрочен · ${day}.${month}`
-          : `Оплата ${day}.${month}`;
+          : isIncomeFlow
+            ? formatLongRuDate(payment.nextDate)
+            : `Оплата ${day}.${month}`;
+      const borderClass = isPaid ? 'rec-paid' : isIncomeFlow ? 'rec-green' : (status === 'overdue' || status === 'urgent') ? 'rec-red' : 'rec-yellow';
       const card = document.createElement('article');
-      card.className = `card-lg finance-card recurring-card flow-${payment.flow || 'expense'}${meta.stateClass ? ` ${meta.stateClass}` : ''}`;
+      card.className = `card-lg finance-card recurring-card flow-${payment.flow || 'expense'}${meta.stateClass ? ` ${meta.stateClass}` : ''} ${borderClass}${isPaid ? ' is-paid' : ''}`;
       card.dataset.flow = payment.flow || 'expense';
       card.dataset.removable = '';
       card.dataset.recurringId = payment.id;
       card.innerHTML = `
         <button class="finance-main" type="button" data-action="open-history">
           <span class="badge" style="background:${TONE_BG[category?.tone] || TONE_BG.teal};color:${TONE_HEX[category?.tone] || TONE_HEX.teal}">${categoryIcon(category, categoryName)}</span>
-          <div class="row-1"><p class="name">${escapeHtml(payment.title)}</p><p class="meta">${ownerMarkup(escapeHtml(user?.name ?? '—'), payment.userId)} · ${escapeHtml(categoryName)} · ${escapeHtml(payment.periodicity)}</p></div>
+          <div class="row-1"><p class="name">${escapeHtml(payment.title)}</p><p class="meta">${ownerMarkup(escapeHtml(user?.name ?? '—'), payment.userId)}${isIncomeFlow ? '' : ` · ${escapeHtml(categoryName)}`} · ${escapeHtml(payment.periodicity)}</p></div>
           <p class="amount${isIncomeFlow ? ' positive' : ''}">${isIncomeFlow ? '+' : ''}${formatRub(remainingRecurringPayment(payment) || payment.amount)}</p>
         </button>
         <div class="recurring-foot">
