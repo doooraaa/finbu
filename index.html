@@ -136,17 +136,7 @@
           <button type="button" data-action="dash-owner" data-owner="user-yulya" data-owner-name>Юля</button>
         </div>
 
-        <div class="date-range-wrap">
-          <div class="date-range" aria-label="Диапазон дат">
-            <button class="is-active" type="button" data-action="select-period" data-period="thisMonth">Этот месяц</button>
-            <button type="button" data-action="select-period" data-period="today">Сегодня</button>
-            <button type="button" data-action="select-period" data-period="yesterday">Вчера</button>
-            <button type="button" data-action="select-period" data-period="7d">7 дней</button>
-            <button type="button" data-action="select-period" data-period="30d">30 дней</button>
-            <button type="button" data-action="select-period" data-period="all">Все время</button>
-            <button type="button" data-action="toggle-range-calendar">Свой период</button>
-          </div>
-          <div class="choice-menu calendar-menu range-calendar" id="rangeCalendar" hidden>
+        <div class="choice-menu calendar-menu range-calendar" id="rangeCalendar" hidden>
             <div class="calendar-head">
               <button type="button" data-action="range-calendar-prev" aria-label="Предыдущий месяц"><svg class="ti"><use href="#i-chev-l"/></svg></button>
               <b id="rangeCalendarTitle">Август 2026</b>
@@ -156,7 +146,6 @@
               <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
             </div>
             <div class="calendar-days" id="rangeCalendarDays"></div>
-          </div>
         </div>
 
         <div class="hero">
@@ -178,7 +167,7 @@
         <div class="ui-state empty-state" id="upcomingPaymentsEmpty" hidden><b>Ближайших платежей нет</b><small>Все обязательные платежи оплачены или не запланированы.</small></div>
         <div class="mini-stats">
           <div><p class="meta">Доходы</p><p class="mini-amount t-green" data-upcoming="income">+0 ₽</p></div>
-          <div><p class="meta">Расходы</p><p class="mini-amount t-red" data-upcoming="expense">−0 ₽</p></div>
+          <div><p class="meta">Расходы</p><p class="mini-amount t-red" data-upcoming="expense">-0 ₽</p></div>
         </div>
         <button class="btn-ghost" type="button" data-action="show-screen" data-screen="recurring">Все предстоящие операции <svg class="ti"><use href="#i-arrow-right"/></svg></button>
         <p class="dash-debt-line" id="dashDebtLine"></p>
@@ -188,7 +177,11 @@
         <div class="ui-state empty-state" id="dashboardRemindersEmpty" hidden><b>Напоминаний нет</b><small>На этот месяц ничего не запланировано.</small></div>
         <button class="btn-ghost" type="button" data-action="show-screen" data-screen="reminders">Все напоминания <svg class="ti"><use href="#i-arrow-right"/></svg></button>
 
-        <button class="btn-ghost" type="button" data-action="show-stats-operations">Все операции <svg class="ti"><use href="#i-arrow-right"/></svg></button>
+        <p class="title-sm" hidden>Сегодня</p>
+        <div data-record="today" hidden></div>
+        <p class="title-sm" hidden>Вчера</p>
+        <div data-record="yesterday" hidden></div>
+
       </section>
       <!-- ================= ДОХОДЫ ================= -->
       <section class="screen" id="incomesScreen" aria-labelledby="incomesTitle">
@@ -476,7 +469,7 @@
         <h1 class="title" id="recurringTitle">Предстоящие операции</h1>
         <div class="mini-stats">
           <div><p class="meta">Доходы</p><p class="mini-amount t-green" data-upcoming="income">+0 ₽</p></div>
-          <div><p class="meta">Обязательства</p><p class="mini-amount t-red" data-upcoming="expense">−0 ₽</p></div>
+          <div><p class="meta">Обязательства</p><p class="mini-amount t-red" data-upcoming="expense">-0 ₽</p></div>
         </div>
         <section class="grid-2 stat-pair" aria-label="Сводка за месяц">
           <article class="card stat-mini"><span class="label">Запланировано за месяц</span><div class="stat-mini-value t-yellow" data-recurring-summary="planned">0 ₽</div></article>

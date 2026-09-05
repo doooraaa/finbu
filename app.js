@@ -974,7 +974,7 @@ function formatOperationDate(date) {
 }
 
 function formatDashboardDate(date) {
-  return `Сегодня ${date.getDate()} ${monthNames[date.getMonth()]}`;
+  return `Сегодня, ${date.getDate()} ${monthNames[date.getMonth()]}`;
 }
 
 function setOperationDate(date) {
@@ -3668,10 +3668,6 @@ async function setPeriod(period) {
   document.querySelectorAll('[data-action="toggle-range-calendar"], [data-action="toggle-page-range-calendar"]').forEach((button) => {
     button.textContent = 'Свой период';
   });
-  const periodNames = { thisMonth: 'этот месяц', today: 'сегодня', yesterday: 'вчера', '7d': '7 дней', '30d': '30 дней', all: 'всё время', custom: 'выбранный период' };
-  document.querySelectorAll('#dashPeriodLabel').forEach((el) => {
-    el.innerHTML = 'Свободно за <b>' + (periodNames[period] || 'этот месяц') + '</b>';
-  });
   await Promise.all([
     refreshDashboardSummary(),
     renderTransactionScreen('income'),
@@ -3810,9 +3806,35 @@ async function saveOperation() {
 }
 
 /** Перечитывает баланс/доходы/расходы из БД и обновляет карточки на Главной. */
+/** Неоплаченные обязательные платежи текущего месяца (как в мокапе: «Осталось оплатить»). */
+async function getDashboardUnpaid() {
+  const { from, to } = getPeriodRange('thisMonth');
+  const monthKey = from.slice(0, 7);
+  const ok = (r) => dashboardOwner === 'all' || r.userId === dashboardOwner || !r.userId;
+  const [recurringPayments, loans, cards] = await Promise.all([
+    db.getAll('recurringPayments'),
+    db.getAll('loans'),
+    db.getAll('creditCards'),
+  ]);
+  const items = [
+    ...recurringPayments
+      .filter((p) => (p.flow || 'expense') !== 'income' && ok(p))
+      .filter((p) => !(p.paidAt && String(p.paidAt).slice(0, 7) === monthKey))
+      .filter((p) => p.nextDate >= from && p.nextDate <= to)
+      .map((p) => ({ amount: remainingRecurringPayment(p), date: p.nextDate })),
+    ...loans.filter((l) => (l.debt || 0) > 0 && ok(l)).map((l) => ({ amount: remainingDebtPayment(l, 'loan'), date: l.nextDate })),
+    ...cards.filter((c) => (c.debt || 0) > 0 && ok(c)).map((c) => ({ amount: remainingDebtPayment(c, 'card'), date: c.nextDate })),
+  ].filter((i) => i.date >= from && i.date <= to);
+  return { items, total: items.reduce((s, i) => s + i.amount, 0) };
+}
+
 async function refreshDashboardSummary() {
-  const { from, to } = getPeriodRange(currentPeriod);
-  const summary = await db.getSummary({ from, to, userId: dashboardOwner === 'all' ? undefined : dashboardOwner });
+  // Главная по мокапу всегда показывает текущий месяц, независимо от периодов других экранов.
+  const { from, to } = getPeriodRange('thisMonth');
+  const [summary, unpaid] = await Promise.all([
+    db.getSummary({ from, to, userId: dashboardOwner === 'all' ? undefined : dashboardOwner }),
+    getDashboardUnpaid(),
+  ]);
 
   const balanceEl = document.querySelector('[data-summary="balance"]');
   const incomeEl = document.querySelector('[data-summary="income"]');
@@ -3821,56 +3843,12 @@ async function refreshDashboardSummary() {
   if (balanceEl) balanceEl.textContent = formatRub(summary.balance);
   if (incomeEl) incomeEl.textContent = formatRub(summary.income);
   if (expenseEl) expenseEl.textContent = formatRub(summary.expense);
-  if (freeEl) freeEl.textContent = formatRub(summary.free);
-}
-
-/** Рендерит блок «Последние операции» на Главной из реальных данных IndexedDB. */
-async function renderRecentOperations(limit = 3) {
-  const card = document.querySelector('#recentOperationsCard');
-  if (!card) return;
-
-  const [transactions, categories, users] = await Promise.all([
-    db.listTransactions(),
-    db.getAll('categories'),
-    db.getAll('users'),
-  ]);
-
-  const emptyState = card.querySelector('.operations-empty');
-  card.querySelectorAll('[data-operation-row]').forEach((row) => row.remove());
-
-  if (transactions.length === 0) {
-    if (emptyState) emptyState.hidden = false;
-    return;
-  }
-  if (emptyState) emptyState.hidden = true;
-
-  const template = card.querySelector('[data-operation-template]');
-  const fragment = document.createDocumentFragment();
-
-  transactions.slice(0, limit).forEach((transaction) => {
-    const category = categories.find((c) => c.id === transaction.categoryId);
-    const user = users.find((u) => u.id === transaction.userId);
-    const isIncome = transaction.type === 'income';
-    const sign = isIncome ? '+' : '−';
-    const toneClass = isIncome ? 'green' : 'rose';
-
-    const row = document.createElement('div');
-    row.className = 'operation';
-    row.dataset.operationRow = '';
-    row.innerHTML = `
-      <span><span class="operation-title"><span class="category-emoji-inline">${categoryIcon(category, category?.name ?? transaction.label)}</span>${escapeHtml(category?.name ?? transaction.label ?? 'Без категории')} → ${ownerMarkup(escapeHtml(user?.name ?? '—'), user?.id)}</span><strong class="${toneClass}">${sign}${formatRub(transaction.amount)}</strong></span>
-      <small>${formatRelativeShortDate(transaction.date)}</small>
-    `;
-    fragment.append(row);
-  });
-
-  template?.before(fragment);
+  if (freeEl) freeEl.textContent = formatRub(summary.balance - unpaid.total);
 }
 
 async function refreshDashboard() {
   await Promise.all([
     refreshDashboardSummary(),
-    renderRecentOperations(),
     renderDashboardInsights(),
     renderUpcomingPayments(),
     renderDashboardReminders(),
@@ -3881,9 +3859,9 @@ async function refreshDashboard() {
 function pluralizePayments(count) {
   const mod10 = count % 10;
   const mod100 = count % 100;
-  if (mod10 === 1 && mod100 !== 11) return 'обязательный платёж';
-  if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) return 'обязательных платежа';
-  return 'обязательных платежей';
+  if (mod10 === 1 && mod100 !== 11) return 'платёж';
+  if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) return 'платежа';
+  return 'платежей';
 }
 
 async function renderUpcomingPayments() {
@@ -3914,18 +3892,18 @@ async function renderUpcomingPayments() {
   const dashIncome = items.filter((i) => i.flow === 'income').reduce((s, i) => s + i.amount, 0);
   const dashExpense = items.filter((i) => i.flow !== 'income').reduce((s, i) => s + i.amount, 0);
   document.querySelectorAll('#dashboardScreen [data-upcoming="income"]').forEach((el) => { el.textContent = '+' + formatRub(dashIncome); });
-  document.querySelectorAll('#dashboardScreen [data-upcoming="expense"]').forEach((el) => { el.textContent = '−' + formatRub(dashExpense); });
+  document.querySelectorAll('#dashboardScreen [data-upcoming="expense"]').forEach((el) => { el.textContent = '-' + formatRub(dashExpense); });
   renderDashDebtLine();
 
   list.innerHTML = '';
   if (emptyState) emptyState.hidden = items.length > 0;
 
   items.slice(0, 4).forEach((item) => {
-    const status = db.getRecurringPaymentStatus({ nextDate: item.date, paidAt: null });
-    const stripe = status === 'overdue' || status === 'urgent' ? '#f09595' : status === 'soon' ? '#fac775' : ((item.owner && OWNER_COLOR_BY_TONE[users.find((u) => u.id === item.owner)?.tone]) || '#5dcaa5');
+    const isIncome = item.flow === 'income';
+    const stripe = isIncome ? '#5dcaa5' : '#f09595';
     const row = document.createElement('div');
     row.className = 'row';
-    row.innerHTML = `<span class="stripe" style="background:${stripe}"></span><div class="row-1"><p class="name">${escapeHtml(item.title)}</p><p class="meta">${formatLongRuDate(item.date)} · ${ownerMarkup(escapeHtml(userName(item.owner)), item.owner)}</p></div><p class="amount${item.flow === 'income' ? ' positive' : ''}">${item.flow === 'income' ? '+' : '−'}${formatRub(item.amount)}</p>`;
+    row.innerHTML = `<span class="stripe" style="background:${stripe}"></span><div class="row-1"><p class="name">${escapeHtml(item.title)}</p><p class="meta">${formatLongRuDate(item.date)} · ${ownerMarkup(escapeHtml(userName(item.owner)), item.owner)}</p></div><p class="amount${isIncome ? ' positive' : ' negative'}">${isIncome ? '+' : '-'}${formatRub(item.amount)}</p>`;
     list.append(row);
   });
 }
@@ -3953,7 +3931,7 @@ async function renderDashboardReminders() {
 
   reminders.forEach((reminder) => {
     const done = false;
-    const stripe = '#afa9ec';
+    const stripe = '#f09595';
     const row = document.createElement('div');
     row.className = 'row';
     row.innerHTML = `<span class="stripe" style="background:${stripe}"></span><div class="row-1"><p class="name">${escapeHtml(reminder.title)}</p><p class="meta">${formatRuDate(reminder.nextDate).slice(0, 5)} · ${reminderRepeatLabel(reminder)} · ${reminderAssigneeMarkup(reminder.assignee, users)}</p></div><button class="checkbox" type="button" data-action="toggle-reminder-complete" data-reminder-id="${reminder.id}" aria-label="Отметить выполненным"></button>`;
@@ -4326,10 +4304,6 @@ document.addEventListener('click', async (event) => {
   if (action === 'dashboard') showScreen('dashboard');
   if (action === 'more') showScreen('more');
   if (action === 'show-screen') showScreen(control.dataset.screen);
-  if (action === 'show-stats-operations') {
-    showScreen('analytics');
-    showStatsTab('operations');
-  }
   if (action === 'stats-tab') showStatsTab(control.dataset.tab);
   if (action === 'insight-prev') moveInsightSlide(-1);
   if (action === 'insight-next') moveInsightSlide(1);
@@ -5009,13 +4983,13 @@ db.seedIfEmpty()
    onboarding, filter segments, export. Appended 2026-09-04.
    ============================================================ */
 
-function dashboardRecordRow(t, ownerName) {
-  const sign = t.type === 'income' ? '+' : '−';
-  const label = t.type === 'income' ? (t.source || t.category || 'Доход') : (t.category || t.source || 'Трата');
-  const tone = t.tone || 'teal';
+function dashboardRecordRow(t, ownerName, category) {
+  const sign = t.type === 'income' ? '+' : '-';
+  const label = t.label || category?.name || (t.type === 'income' ? 'Доход' : 'Трата');
+  const tone = category?.tone || 'teal';
   return `<div class="card row" data-transaction-id="${t.id}">`
-    + `<span class="badge" style="background:${TONE_BG[tone] || TONE_BG.teal};color:${TONE_HEX[tone] || TONE_HEX.teal}">${categoryIcon({ icon: t.icon, tone }, t.category || t.source || '')}</span>`
-    + `<div class="row-1"><p class="name">${escapeHtml(label)}</p><p class="meta">${ownerMarkup(escapeHtml(ownerName), t.userId)}${t.comment ? ` · ${escapeHtml(t.comment)}` : ''}</p></div>`
+    + `<span class="badge" style="background:${TONE_BG[tone] || TONE_BG.teal};color:${TONE_HEX[tone] || TONE_HEX.teal}">${categoryIcon(category?.icon, label)}</span>`
+    + `<div class="row-1"><p class="name">${escapeHtml(label)}</p><p class="meta">${ownerMarkup(escapeHtml(ownerName), t.userId)}</p></div>`
     + `<p class="amount${t.type === 'income' ? ' positive' : ''}">${sign}${formatRub(t.amount)}</p></div>`;
 }
 
@@ -5030,13 +5004,14 @@ async function renderDashboardDayGroups() {
     const todayIso = iso(now);
     const yest = new Date(now); yest.setDate(yest.getDate() - 1);
     const yestIso = iso(yest);
-    const [transactions, users] = await Promise.all([db.listTransactions(), db.getAll('users')]);
+    const [transactions, users, categories] = await Promise.all([db.listTransactions(), db.getAll('users'), db.getAll('categories')]);
     const nameOf = (id) => (users.find((u) => u.id === id)?.name || '—');
+    const catOf = (t) => categories.find((c) => c.id === t.categoryId);
     const ok = (t) => dashboardOwner === 'all' || t.userId === dashboardOwner;
     if (todayBox) {
       const rows = transactions.filter((t) => t.date === todayIso && ok(t))
         .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
-      todayBox.innerHTML = rows.length ? rows.map((t) => dashboardRecordRow(t, nameOf(t.userId))).join('') : '';
+      todayBox.innerHTML = rows.length ? rows.map((t) => dashboardRecordRow(t, nameOf(t.userId), catOf(t))).join('') : '';
       const head = todayBox.previousElementSibling;
       if (head && head.classList.contains('title-sm')) head.hidden = !rows.length;
       todayBox.hidden = !rows.length;
@@ -5045,7 +5020,7 @@ async function renderDashboardDayGroups() {
     if (yesterdayBox) {
       const rows = transactions.filter((t) => t.date === yestIso && ok(t))
         .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
-      yesterdayBox.innerHTML = rows.length ? rows.map((t) => dashboardRecordRow(t, nameOf(t.userId))).join('') : '';
+      yesterdayBox.innerHTML = rows.length ? rows.map((t) => dashboardRecordRow(t, nameOf(t.userId), catOf(t))).join('') : '';
       const head = yesterdayBox.previousElementSibling;
       if (head && head.classList.contains('title-sm')) head.hidden = !rows.length;
       yesterdayBox.hidden = !rows.length;
@@ -5058,17 +5033,10 @@ async function renderDashDebtLine() {
   const line = document.querySelector('#dashDebtLine');
   if (!line) return;
   try {
-    const { from, to } = getPeriodRange(currentPeriod);
-    const [loans, cards] = await Promise.all([db.getAll('loans'), db.getAll('creditCards')]);
-    const ok = (r) => dashboardOwner === 'all' || r.userId === dashboardOwner;
-    const items = [
-      ...loans.filter((l) => (l.debt || 0) > 0 && ok(l)).map((l) => ({ amount: remainingDebtPayment(l, 'loan'), date: l.nextDate })),
-      ...cards.filter((c) => (c.debt || 0) > 0 && ok(c)).map((c) => ({ amount: remainingDebtPayment(c, 'card'), date: c.nextDate })),
-    ].filter((i) => (!from || i.date >= from) && (!to || i.date <= to));
+    const { items, total } = await getDashboardUnpaid();
     if (!items.length) { line.hidden = true; return; }
-    const total = items.reduce((s, i) => s + i.amount, 0);
     line.hidden = false;
-    line.innerHTML = `<span class="k">Погашение долгов</span><span class="v neg">−${formatRub(total)}</span>`;
+    line.innerHTML = `Осталось оплатить <b>${formatRub(total)}</b> — ${items.length} ${pluralizePayments(items.length)} в этом месяце`;
   } catch { line.hidden = true; }
 }
 
