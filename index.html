@@ -59,23 +59,14 @@
             </div>
           </div>
 
-          <section class="grid stats" aria-label="Финансовая сводка">
-            <article class="card stat-card">
-              <span class="label">Баланс</span>
-              <div class="value" data-summary="balance">248 500 ₽</div>
-            </article>
-            <article class="card stat-card">
-              <span class="label">Доходы</span>
-              <div class="value green" data-summary="income">312 000 ₽</div>
-            </article>
-            <article class="card stat-card">
-              <span class="label">Расходы</span>
-              <div class="value rose" data-summary="expense">125 580 ₽</div>
-            </article>
-            <article class="card stat-card">
-              <span class="label">Свободно</span>
-              <div class="value teal" data-summary="free">37 400 ₽</div>
-            </article>
+          <section class="hero-summary" aria-label="Финансовая сводка">
+            <span class="pill hero-summary-label">Свободно за <b>период</b></span>
+            <div class="value hero-summary-value" data-summary="free">37 400 ₽</div>
+            <div class="hero-summary-pills">
+              <span class="pill hero-pill hero-pill-green"><span class="hero-pill-icon" aria-hidden="true">↓</span><b data-summary="income">312 000 ₽</b></span>
+              <span class="pill hero-pill hero-pill-rose"><span class="hero-pill-icon" aria-hidden="true">↑</span><b data-summary="expense">125 580 ₽</b></span>
+              <span class="pill hero-pill"><span class="hero-pill-icon" aria-hidden="true">⊙</span>Баланс <b data-summary="balance">248 500 ₽</b></span>
+            </div>
           </section>
 
           <section class="dash-grid dashboard-lists">
