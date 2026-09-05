@@ -1119,21 +1119,6 @@ function showScreen(name, { updateRoute = true, replaceRoute = false } = {}) {
   return true;
 }
 
-function showStatsTab(tab) {
-  document.querySelectorAll('[data-stats-pane]').forEach((pane) => {
-    const isActive = pane.dataset.statsPane === tab;
-    pane.hidden = !isActive;
-    pane.classList.toggle('is-active', isActive);
-  });
-
-  document.querySelectorAll('[data-action="stats-tab"]').forEach((label) => {
-    const isActive = label.dataset.tab === tab;
-    const input = label.querySelector('input');
-    if (input) input.checked = isActive;
-  });
-
-}
-
 function setInsightSlide(index) {
   if (!insightsViewport || !insightSlides.length) return;
   const nextIndex = Math.max(0, Math.min(index, insightSlides.length - 1));
@@ -2831,106 +2816,6 @@ async function renderStatisticsOverview() {
   setStat('worst-month-value', worstMonth ? `Расходы ${formatRub(worstMonth.expense)}` : '—');
 }
 
-let statsOperationsFilter = 'all';
-let statsOperationsSearchQuery = '';
-
-async function renderStatisticsOperations() {
-  const { from, to } = getPeriodRange(currentPeriod);
-  const [transactions, categories, users] = await Promise.all([
-    db.listTransactions({ from, to, type: statsOperationsFilter === 'all' ? undefined : statsOperationsFilter }),
-    db.getAll('categories'),
-    db.getAll('users'),
-  ]);
-
-  const list = document.querySelector('#statsHistoryList');
-  const emptyState = document.querySelector('#statsHistoryEmpty');
-  if (!list) return;
-  list.innerHTML = '';
-
-  if (transactions.length === 0) {
-    if (emptyState) {
-      emptyState.hidden = false;
-      emptyState.querySelector('b').textContent = 'Операций нет';
-      emptyState.querySelector('small').textContent = 'Когда за выбранный период появятся операции, они будут сгруппированы по дням.';
-    }
-    return;
-  }
-  if (emptyState) emptyState.hidden = true;
-
-  const searchQuery = statsOperationsSearchQuery.trim().toLowerCase();
-  const visibleTransactions = searchQuery
-    ? transactions.filter((t) => {
-        const category = categories.find((c) => c.id === t.categoryId);
-        const user = users.find((u) => u.id === t.userId);
-        const haystack = [
-          category?.name,
-          t.label,
-          user?.name,
-          t.comment,
-          t.date,
-          String(t.amount),
-          t.type === 'income' ? 'доход' : 'расход',
-        ]
-          .filter(Boolean)
-          .join(' ')
-          .toLowerCase();
-        return haystack.includes(searchQuery);
-      })
-    : transactions;
-
-  if (visibleTransactions.length === 0) {
-    if (emptyState) {
-      emptyState.hidden = false;
-      emptyState.querySelector('b').textContent = searchQuery ? 'Ничего не найдено' : 'Операций нет';
-      emptyState.querySelector('small').textContent = searchQuery
-        ? `По запросу «${searchQuery}» операций не найдено.`
-        : 'Когда за выбранный период появятся операции, они будут сгруппированы по дням.';
-    }
-    return;
-  }
-  if (emptyState) emptyState.hidden = true;
-
-  const byDay = new Map();
-  visibleTransactions.forEach((t) => {
-    if (!byDay.has(t.date)) byDay.set(t.date, []);
-    byDay.get(t.date).push(t);
-  });
-
-  [...byDay.keys()]
-    .sort((a, b) => b.localeCompare(a))
-    .forEach((date) => {
-      const dayTx = byDay.get(date);
-      const net = dayTx.reduce((s, t) => s + (t.type === 'income' ? t.amount : -t.amount), 0);
-      const day = document.createElement('article');
-      day.className = 'card operation-day';
-      day.innerHTML = `
-        <div class="operation-day-head"><h3>${formatDayHeading(date)}</h3><strong class="${net >= 0 ? 'green' : 'rose'}">${net >= 0 ? '+' : '−'}${formatRub(Math.abs(net))}</strong></div>
-        ${dayTx
-          .map((t) => {
-            const category = categories.find((c) => c.id === t.categoryId);
-            const user = users.find((u) => u.id === t.userId);
-            const sign = t.type === 'income' ? '+' : '−';
-            const tone = t.type === 'income' ? 'green' : 'rose';
-            return `
-            <div class="stats-operation operation-record" data-transaction-id="${t.id}" role="button" tabindex="0" aria-expanded="false">
-              <span class="category-orb ${category?.tone ?? 'violet'}" data-emoji="${escapeHtml(categoryEmoji(category, category?.name ?? t.label))}"></span>
-              <div><b>${escapeHtml(category?.name ?? t.label ?? 'Без категории')} ${ownerMarkup(escapeHtml(user?.name ?? '—'), user?.id)}</b><small>${t.type === 'income' ? 'Доход' : 'Расход'}</small></div>
-              <strong class="${tone}">${sign}${formatRub(t.amount)}</strong>
-              <div class="record-actions">
-                <button type="button" data-action="edit-transaction" aria-label="Редактировать">✎</button>
-                <button type="button" data-action="delete-transaction" aria-label="Удалить">×</button>
-              </div>
-            </div>
-          `;
-          })
-          .join('')}
-      `;
-      list.append(day);
-    });
-
-  renderFunctionalIcons(list);
-}
-
 function formatDayHeading(isoDate) {
   const [year, month, day] = isoDate.split('-').map(Number);
   const date = new Date(year, month - 1, day);
@@ -2944,7 +2829,7 @@ function formatDayHeading(isoDate) {
 }
 
 async function renderStatisticsScreen() {
-  await Promise.all([renderStatisticsOverview(), renderStatisticsOperations(), renderInsightsTab()]);
+  await renderStatisticsOverview();
 }
 
 async function renderArchiveScreen() {
@@ -2985,13 +2870,15 @@ async function renderArchiveScreen() {
       kind: 'transaction',
       id: t.id,
       date: t.date,
-      titleHtml: `<span class="category-emoji-inline">${categoryIcon(category, category?.name ?? t.label)}</span>${escapeHtml(category?.name ?? t.label ?? 'Без категории')} → ${ownerNameHtml(t.userId, user?.name)}`,
+      name: category?.name ?? t.label ?? 'Без категории',
+      iconSvg: categoryIcon(category, category?.name ?? t.label),
+      badgeClass: t.type === 'income' ? 't-green' : 't-coral',
       searchText: `${category?.name ?? t.label ?? 'Без категории'} ${user?.name ?? ''}`,
-      meta: `${formatRuDate(t.date).slice(0, 5)} · ${t.type === 'income' ? 'Доход' : 'Расход'} · выполнено`,
+      shortDate: formatRuDate(t.date).slice(0, 5),
+      ownerHtml: ownerNameHtml(t.userId, user?.name),
       amount: t.amount,
-      tone: t.type === 'income' ? 'green' : 'rose',
+      amountClass: t.type === 'income' ? 't-green' : 't-coral',
       sign: t.type === 'income' ? '+' : '−',
-      detail: `Категория: ${category?.name ?? '—'}. Статус: ${t.type === 'income' ? 'получено' : 'оплачено'}.`,
     });
   });
 
@@ -3004,13 +2891,12 @@ async function renderArchiveScreen() {
         kind: 'loan',
         id: l.id,
         date: l.archiveDate,
-        titleHtml: `Закрытая ${l.kind === 'installment' ? 'рассрочка' : 'кредит'} ${escapeHtml(l.title)} → ${ownerNameHtml(l.userId, user?.name)}`,
+        name: l.title,
+        badgeClass: 't-green',
+        iconSvg: icon('check'),
         searchText: `${l.title} ${user?.name ?? ''}`,
-        meta: `${formatRuDate(l.archiveDate).slice(0, 5)} · ${l.kind === 'installment' ? 'Рассрочка' : 'Кредит'} · закрыто`,
+        meta: `${ownerNameHtml(l.userId, user?.name)} · закрыт${l.kind === 'installment' ? 'а' : ''} ${formatRuDate(l.archiveDate)}`,
         amount: 0,
-        tone: '',
-        sign: '',
-        detail: `Первоначальная сумма ${formatRub(l.initialAmount)}, обязательства закрыты.`,
       });
     });
 
@@ -3024,13 +2910,13 @@ async function renderArchiveScreen() {
         kind: 'creditCard',
         id: card.id,
         date: card.archiveDate,
-        titleHtml: `Закрытая кредитная карта ${escapeHtml(bank?.name || card.title || 'Банк')} → ${ownerNameHtml(card.userId, user?.name)}`,
+        name: bank?.name || card.title || 'Карта',
+        badgeClass: '',
+        badgeStyle: `background:${bank?.color || '#afa9ec'}26;color:${bank?.color || '#afa9ec'}`,
+        iconSvg: icon('creditCard'),
         searchText: `${bank?.name || card.title || ''} ${user?.name || ''}`,
-        meta: `${formatRuDate(card.archiveDate).slice(0, 5)} · Кредитная карта · закрыто`,
+        meta: `${ownerNameHtml(card.userId, user?.name)} · закрыта ${formatRuDate(card.archiveDate)}`,
         amount: 0,
-        tone: '',
-        sign: '',
-        detail: `Кредитный лимит ${formatRub(card.limit)}, задолженность погашена.`,
       });
     });
 
@@ -3042,13 +2928,12 @@ async function renderArchiveScreen() {
         kind: 'goal',
         id: goal.id,
         date: goal.archiveDate,
-        titleHtml: `Выполненная цель ${escapeHtml(goal.title)}`,
+        name: `Цель: ${goal.title}`,
+        badgeClass: 't-purple',
+        iconSvg: icon('target'),
         searchText: goal.title,
-        meta: `${formatRuDate(goal.archiveDate).slice(0, 5)} · Цель · выполнено`,
-        amount: goal.savedAmount,
-        tone: 'green',
-        sign: '+',
-        detail: `Накоплено ${formatRub(goal.savedAmount)} из ${formatRub(goal.targetAmount)}.`,
+        meta: `достигнута ${formatRuDate(goal.archiveDate).slice(3)}`,
+        amount: 0,
       });
     });
 
@@ -3069,7 +2954,6 @@ async function renderArchiveScreen() {
   const applyButton = document.querySelector('#filterApplyButton');
   if (applyButton) applyButton.textContent = `Показать ${visibleEntries.length} ${pluralizeOperations(visibleEntries.length)}`;
 
-  list.innerHTML = '';
   if (emptyState) {
     emptyState.hidden = visibleEntries.length > 0;
     if (visibleEntries.length === 0 && searchQuery) {
@@ -3081,29 +2965,46 @@ async function renderArchiveScreen() {
     }
   }
 
-  visibleEntries.forEach((entry) => {
-    const row = document.createElement('div');
-    row.className = `record archive-record${entry.kind === 'transaction' ? ' operation-record' : ''}`;
-    if (entry.kind === 'transaction') {
-      row.tabIndex = 0;
-      row.setAttribute('role', 'button');
-      row.setAttribute('aria-expanded', 'false');
-    }
+  const paintArchiveRow = (entry) => {
+    const row = document.createElement('article');
+    const isTransaction = entry.kind === 'transaction';
+    row.className = `card row archive-record operation-record${isTransaction ? '' : ' archive-closed'}`;
+    row.tabIndex = 0;
+    row.setAttribute('role', 'button');
+    row.setAttribute('aria-expanded', 'false');
     row.dataset.removable = '';
     row.dataset.archiveKind = entry.kind;
     row.dataset.archiveId = entry.id;
+    const badge = `<div class="badge archive-badge ${entry.badgeClass || ''}"${entry.badgeStyle ? ` style="${entry.badgeStyle}"` : ''}>${entry.iconSvg}</div>`;
+    const main = `<div class="row-1"><p class="name archive-name">${escapeHtml(entry.name)}</p><p class="meta">${isTransaction ? `${entry.shortDate} · ${entry.ownerHtml}` : entry.meta}</p></div>`;
+    const side = isTransaction
+      ? `<p class="amount ${entry.amountClass}">${entry.sign}${formatRub(entry.amount)}</p>`
+      : '<svg class="ti archive-chev"><use href="#i-chev-r"/></svg>';
     row.innerHTML = `
-      <div><b>${entry.titleHtml}</b><small>${entry.meta}</small></div>
-      <strong class="${entry.tone}">${entry.amount > 0 ? `${entry.sign}${formatRub(entry.amount)}` : '0 ₽'}</strong>
+      ${badge}
+      ${main}
+      ${side}
       <div class="record-actions">
-        <button type="button" data-action="edit-archive-entry" aria-label="Редактировать">✎</button>
-        <button type="button" data-action="delete-archive-entry" aria-label="Удалить">×</button>
+        <button type="button" data-action="edit-archive-entry" aria-label="Редактировать"><svg class="ti"><use href="#i-pencil"/></svg></button>
+        <button type="button" data-action="delete-archive-entry" aria-label="Удалить"><svg class="ti"><use href="#i-trash"/></svg></button>
       </div>
     `;
-    list.append(row);
-  });
+    return row;
+  };
+
+  list.innerHTML = '';
+  visibleEntries.filter((entry) => entry.kind === 'transaction').forEach((entry) => list.append(paintArchiveRow(entry)));
+  const closedEntries = visibleEntries.filter((entry) => entry.kind !== 'transaction');
+  const closedList = document.querySelector('#archiveClosedList');
+  const closedTitle = document.querySelector('#archiveClosedTitle');
+  if (closedList) {
+    closedList.innerHTML = '';
+    closedEntries.forEach((entry) => closedList.append(paintArchiveRow(entry)));
+  }
+  if (closedTitle) closedTitle.hidden = closedEntries.length === 0;
 
   renderFunctionalIcons(list);
+  if (closedList) renderFunctionalIcons(closedList);
 }
 
 async function renderCategoryPicker() {
@@ -4414,7 +4315,6 @@ document.addEventListener('click', async (event) => {
   if (action === 'dashboard') showScreen('dashboard');
   if (action === 'more') showScreen('more');
   if (action === 'show-screen') showScreen(control.dataset.screen);
-  if (action === 'stats-tab') showStatsTab(control.dataset.tab);
   if (action === 'insight-prev') moveInsightSlide(-1);
   if (action === 'insight-next') moveInsightSlide(1);
   if (action === 'insight-dot') setInsightSlide(Number(control.dataset.index || 0));
@@ -4502,7 +4402,7 @@ document.addEventListener('click', async (event) => {
     const row = control.closest('[data-archive-kind]');
     const kind = row?.dataset.archiveKind;
     const id = row?.dataset.archiveId;
-    const name = row.querySelector('b')?.textContent?.trim() || 'запись';
+    const name = row.querySelector('.archive-name')?.textContent?.trim() || 'запись';
     if (kind === 'transaction') {
       openDeleteConfirm({
         title: 'Удалить операцию?',
@@ -4962,10 +4862,6 @@ window.addEventListener('popstate', () => {
 });
 
 document.addEventListener('change', (event) => {
-  if (event.target.name === 'statsFilter') {
-    statsOperationsFilter = event.target.value;
-    renderStatisticsOperations();
-  }
   if (event.target.name === 'theme') {
     db.setSetting('theme', event.target.value).then(() => applyTheme(event.target.value));
   }
@@ -4990,9 +4886,6 @@ document.addEventListener('input', (event) => {
   } else if (id === 'archiveSearchInput') {
     archiveSearchQuery = event.target.value;
     renderArchiveScreen();
-  } else if (id === 'statsSearchInput') {
-    statsOperationsSearchQuery = event.target.value;
-    renderStatisticsOperations();
   } else if (id === 'categoryPickerSearchInput') {
     categoryPickerSearchQuery = event.target.value;
     filterCategoryPickerCards();
@@ -5492,8 +5385,23 @@ function setOperationEntryType(type) {
 
 /* ---------- insights tab ---------- */
 
-async function renderInsightsTab() {
-  const pane = document.querySelector('[data-stats-pane="insights"]');
+function openInsightsModal() {
+  const overlay = document.querySelector('#insightsOverlay');
+  if (!overlay) return Promise.resolve();
+  return renderInsightsModal().then(() => {
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+  });
+}
+
+function closeInsightsModal() {
+  const overlay = document.querySelector('#insightsOverlay');
+  if (overlay) overlay.hidden = true;
+  document.body.style.overflow = '';
+}
+
+async function renderInsightsModal() {
+  const pane = document.querySelector('#insightsOverlay');
   if (!pane) return;
   try {
     const { from, to } = getPeriodRange(currentPeriod);
@@ -5606,20 +5514,20 @@ async function renderInsightsTab() {
         if (iso === isoOf(y)) return 'Вчера';
         return formatRuDate(iso);
       };
-      const tileA = (label, ic, value) => `<div class="insight-tile"><div class="insight-tile-top"><p>${label}</p>${icon(ic, 'ui-icon')}</div><p class="insight-tile-value">${value}</p></div>`;
-      const tileB = (label, ic, sub, value) => `<div class="insight-tile"><p class="insight-tile-label">${label}</p><div class="insight-tile-badge">${icon(ic, 'ui-icon')}</div><p class="insight-tile-sub">${sub}</p><p class="insight-tile-value">${value}</p></div>`;
-      const tileC = (label, sub, value) => `<div class="insight-tile"><p class="insight-tile-label">${label}</p><p class="insight-tile-sub">${sub}</p><p class="insight-tile-value">${value}</p></div>`;
-      const tileD = (label, ic, sub, value) => `<div class="insight-tile"><div class="insight-tile-top"><p>${label}</p>${icon(ic, 'ui-icon')}</div><p class="insight-tile-sub">${sub}</p><p class="insight-tile-value">${value}</p></div>`;
+      const tileA = (label, ic, value, valueClass = '') => `<div class="insight-tile"><div class="insight-tile-top"><p>${label}</p>${icon(ic, 'ui-icon')}</div><p class="insight-tile-value ${valueClass}">${value}</p></div>`;
+      const tileB = (label, ic, sub, value, valueClass, badgeClass) => `<div class="insight-tile center"><p class="insight-tile-label">${label}</p><div class="insight-tile-badge ${badgeClass}">${icon(ic, 'ui-icon')}</div><p class="insight-tile-name">${sub}</p><p class="insight-tile-value sm ${valueClass}">${value}</p></div>`;
+      const tileC = (label, sub, value) => `<div class="insight-tile plain"><p class="insight-tile-label">${label}</p><p class="insight-tile-sub">${sub}</p><p class="insight-tile-value">${value}</p></div>`;
+      const tileD = (label, ic, sub, value, valueClass = '') => `<div class="insight-tile"><div class="insight-tile-top"><p>${label}</p>${icon(ic, 'ui-icon')}</div><p class="insight-tile-sub">${sub}</p><p class="insight-tile-value ${valueClass}">${value}</p></div>`;
       tiles.innerHTML =
         tileA('Средние траты в день', 'calendar', formatRub(expense / days)) +
         tileA('Средние траты в месяц', 'calendarMonth', formatRub(days >= 28 ? expense : (avgMonthly || expense))) +
-        tileB('Самая большая трата', 'shoppingBag', biggestExp ? escapeHtml(biggestExp.category || 'Трата') : '—', biggestExp ? formatRub(biggestExp.amount) : '—') +
-        tileB('Самый большой доход', 'chartLine', biggestInc ? escapeHtml(biggestInc.source || biggestInc.category || 'Доход') : '—', biggestInc ? formatRub(biggestInc.amount) : '—') +
+        tileB('Самая большая трата', 'shoppingBag', biggestExp ? escapeHtml(biggestExp.category || 'Трата') : '—', biggestExp ? formatRub(biggestExp.amount) : '—', 'neg', 'tile-badge-pink') +
+        tileB('Самый большой доход', 'chartLine', biggestInc ? escapeHtml(biggestInc.source || biggestInc.category || 'Доход') : '—', biggestInc ? formatRub(biggestInc.amount) : '—', 'pos', 'tile-badge-green') +
         (topDay ? tileD('Самый дорогой день', 'briefcase', dayLabel(topDay[0]), formatRub(topDay[1])) : tileA('Самый дорогой день', 'briefcase', '—')) +
         tileD('Траты в выходные', 'moon', `${weekendPct}% трат приходится на выходные`, `${weekendPct}%`) +
         tileC('Количество операций', 'Операций за выбранный период', String(txns.length)) +
         (topMonth ? tileD('Самый дорогой месяц', 'briefcase', monthTitle(topMonth[0]), formatRub(topMonth[1])) : tileA('Самый дорогой месяц', 'briefcase', '—')) +
-        (bestSave ? tileD('Лучший месяц по сбережениям', 'handHoldingHeart', monthTitle(bestSave), `${Math.round((nets[bestSave] / incByMonth[bestSave]) * 100)}%`) : '') +
+        (bestSave ? tileD('Лучший месяц по сбережениям', 'handHoldingHeart', monthTitle(bestSave), `${Math.round((nets[bestSave] / incByMonth[bestSave]) * 100)}%`, 'pos') : '') +
         (cushion ? tileD('Подушка безопасности', 'squareRounded', `Текущих средств хватит на ${cushion} мес. расходов`, cushion) : tileC('Подушка безопасности', 'Пока недостаточно данных', '—'));
       renderFunctionalIcons(tiles);
     }
@@ -5694,7 +5602,8 @@ document.addEventListener('click', async (event) => {
     refreshDashboard();
     return;
   }
-  if (action === 'show-insights') { showScreen('analytics'); showStatsTab('insights'); return; }
+  if (action === 'show-insights') { await openInsightsModal(); return; }
+  if (action === 'close-insights') { closeInsightsModal(); return; }
   if (action === 'cycle-theme' || action === 'toggle-theme') {
     const next = document.body.dataset.theme === 'light' ? 'dark' : 'light';
     try { await db.setSetting('theme', next); } catch { /* theme stays local */ }
@@ -5864,7 +5773,6 @@ document.addEventListener('input', (event) => {
   renderSheetQuickCats().catch(() => {});
   renderDashboardDayGroups().catch(() => {});
   renderDashDebtLine().catch(() => {});
-  renderInsightsTab().catch(() => {});
 })();
 
 /* ---------- archive filter sheet ---------- */

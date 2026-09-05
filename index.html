@@ -576,12 +576,6 @@
             <div class="calendar-days" data-calendar-days></div>
           </div>
         </div>
-        <div class="segmented stats-tabs" aria-label="Раздел статистики">
-          <label data-action="stats-tab" data-tab="overview"><input type="radio" name="statsTab" checked><span>Обзор</span></label>
-          <label data-action="stats-tab" data-tab="operations"><input type="radio" name="statsTab"><span>Операции</span></label>
-          <label data-action="stats-tab" data-tab="insights"><input type="radio" name="statsTab"><span>Инсайты</span></label>
-        </div>
-
         <section class="stats-pane is-active" data-stats-pane="overview">
           <article class="card">
             <p class="title-sm">Самый прибыльный месяц</p>
@@ -624,36 +618,9 @@
             <p class="amount t-yellow" data-stat="top-expense-category-value">—</p>
           </article>
         </section>
-
-        <section class="stats-pane" data-stats-pane="operations" hidden>
-          <div class="toolbar stats-operations-toolbar">
-            <label class="search-box"><svg class="ti"><use href="#i-search"/></svg><input type="search" placeholder="Найти операцию" id="statsSearchInput" aria-label="Найти операцию"></label>
-            <div class="segmented compact-filter" aria-label="Фильтр операций"><label><input type="radio" name="statsFilter" value="all" checked><span>Все</span></label><label><input type="radio" name="statsFilter" value="income"><span>Доходы</span></label><label><input type="radio" name="statsFilter" value="expense"><span>Расходы</span></label></div>
-          </div>
-          <section class="stats-history" id="statsHistoryList"></section>
-          <div class="ui-state empty-state" id="statsHistoryEmpty" hidden><b>Операций нет</b><small>Когда за выбранный период появятся операции, они будут сгруппированы по дням.</small></div>
-        </section>
-
-        <section class="stats-pane insights-pane" data-stats-pane="insights" hidden>
-          <div class="insights-hero">
-            <span class="pill" id="insPeriodLabel">Все время</span>
-            <p class="insights-hero-amount" id="insHeroTotal">0 ₽</p>
-            <div class="insights-hero-bar"><span id="insBarExpense"></span><i></i><span id="insBarIncome"></span></div>
-            <p class="insights-saved" id="insSavedLine"></p>
-          </div>
-          <div class="insight-tip t-green-bg" id="insTipGood" hidden>
-            <span class="badge t-green"><svg class="ti"><use href="#i-trending-up"/></svg></span>
-            <p id="insTipGoodText"></p>
-          </div>
-          <div class="insight-tip t-coral-bg" id="insTipWarn" hidden>
-            <span class="badge t-coral"><svg class="ti"><use href="#i-bulb"/></svg></span>
-            <p id="insTipWarnText"></p>
-          </div>
-          <div class="insights-tiles" id="insightsTiles"></div>
-        </section>
       </section>
 
-      <!-- ================= АРХИВ ================= -->
+            <!-- ================= АРХИВ ================= -->
       <section class="screen" id="archiveScreen" aria-labelledby="archiveTitle">
         <h1 class="title" id="archiveTitle">Архив</h1>
         <div class="date-range-wrap page-range-wrap">
@@ -683,6 +650,8 @@
         </div>
         <p class="title-sm">Операции</p>
         <div class="record-list" id="archiveRecordList"></div>
+        <p class="title-sm" id="archiveClosedTitle" hidden>Кредиты и цели</p>
+        <div id="archiveClosedList"></div>
         <div class="ui-state" id="archiveEmptyState" hidden>
           <div class="empty-art"><svg class="ti"><use href="#i-search-off"/></svg></div>
           <b>Ничего не найдено</b>
@@ -919,6 +888,27 @@
         <button class="button ob-btn" type="button" data-action="ob-join-show">Присоединиться</button>
       </div>
     </section>
+  </div>
+
+  <div id="insightsOverlay" hidden>
+    <div class="insights-modal" role="dialog" aria-modal="true" aria-label="Инсайты">
+      <div class="insights-body">
+        <div class="ins-close-row"><button class="ins-close" type="button" data-action="close-insights" aria-label="Закрыть"><svg class="ti"><use href="#i-x"/></svg></button></div>
+        <div class="ins-period"><span class="pill" id="insPeriodLabel">Период</span></div>
+        <p class="ins-total" id="insHeroTotal">0 ₽</p>
+        <div class="ins-bar"><span id="insBarExpense"></span><i></i><span id="insBarIncome"></span></div>
+        <div class="ins-saved-wrap"><p class="ins-saved" id="insSavedLine"></p></div>
+        <div class="ins-tip ins-tip-good" id="insTipGood" hidden>
+          <span class="badge t-green"><svg class="ti"><use href="#i-trending-up"/></svg></span>
+          <p id="insTipGoodText"></p>
+        </div>
+        <div class="ins-tip ins-tip-warn" id="insTipWarn" hidden>
+          <span class="badge t-coral"><svg class="ti"><use href="#i-bulb"/></svg></span>
+          <p id="insTipWarnText"></p>
+        </div>
+        <div class="ins-tiles" id="insightsTiles"></div>
+      </div>
+    </div>
   </div>
 
   <div class="app-modal-backdrop" data-action="request-close-modal" hidden></div>

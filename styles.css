@@ -5458,3 +5458,62 @@ button.pill { border: 0; font-family: inherit; cursor: pointer; }
 #analyticsScreen .stats-ops-count { font-size: 16px; font-weight: 500; color: #fff; margin: 0; }
 #analyticsScreen .stats-top-card .title-sm { margin-bottom: 2px; }
 #analyticsScreen .stats-top-card .badge { font-size: 18px; }
+
+/* --- Инсайты: модалка по мокапу --- */
+#insightsOverlay { position: fixed; inset: 0; z-index: 200; }
+.insights-modal { position: fixed; inset: 0; overflow-y: auto; overscroll-behavior: contain; background: #000; }
+.insights-modal::before { content: ""; position: fixed; top: -70px; left: -70px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(93, 202, 165, 0.3), transparent 70%); pointer-events: none; }
+.insights-body { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 20px 16px 32px; }
+.ins-close-row { display: flex; justify-content: flex-end; margin-bottom: 26px; }
+.ins-close { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--pill); color: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.ins-close .ti { width: 17px; height: 17px; }
+.ins-period { text-align: center; margin-bottom: 18px; }
+.ins-period .pill { font-size: 14px; font-weight: 600; color: #fff; padding: 9px 20px; }
+.ins-total { text-align: center; font-size: 54px; font-weight: 800; letter-spacing: -1px; margin: 0 0 18px; font-variant-numeric: tabular-nums; }
+.ins-total.negative { color: var(--coral); }
+.ins-bar { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; padding: 0 2px; }
+.ins-bar span { height: 6px; border-radius: 4px; min-width: 8px; }
+#insBarExpense { background: linear-gradient(90deg, #e8843f, #f4b85f); }
+#insBarIncome { background: var(--green); }
+.ins-bar i { width: 2px; height: 16px; background: #fff; border-radius: 1px; flex-shrink: 0; }
+.ins-saved-wrap { text-align: center; margin-bottom: 20px; }
+.ins-saved { display: inline-flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: var(--green); margin: 0; }
+.ins-saved .ui-icon { width: 18px; height: 18px; }
+.ins-tip { border-radius: 22px; padding: 16px; margin-bottom: 14px; display: flex; align-items: flex-start; gap: 12px; }
+.ins-tip p { font-size: 13px; color: #fff; margin: 0; line-height: 1.5; }
+.ins-tip p b { font-weight: 700; }
+.ins-tip-good { background: linear-gradient(135deg, rgba(93, 202, 165, 0.14), var(--card) 60%); }
+.ins-tip-warn { background: linear-gradient(135deg, rgba(240, 153, 123, 0.12), var(--card) 60%); margin-bottom: 20px; }
+.ins-tip .badge { flex-shrink: 0; font-size: 18px; }
+.ins-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.insights-modal .insight-tile { background: var(--card); border-radius: 28px; padding: 18px; min-height: 172px; box-sizing: border-box; display: flex; flex-direction: column; }
+.insights-modal .insight-tile-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.insights-modal .insight-tile-top p { font-size: 15px; font-weight: 600; line-height: 1.25; margin: 0; max-width: 70%; color: #fff; }
+.insights-modal .insight-tile-top .ui-icon { width: 21px; height: 21px; color: rgba(255, 255, 255, 0.4); flex-shrink: 0; }
+.insights-modal .insight-tile-label { font-size: 14px; font-weight: 600; line-height: 1.2; margin: 0 0 10px; color: #fff; }
+.insights-modal .insight-tile.center { align-items: center; text-align: center; }
+.insights-modal .insight-tile.plain .insight-tile-label { text-align: left; font-size: 15px; margin: 0; }
+.insights-modal .insight-tile-badge { width: 40px; height: 40px; border-radius: 13px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: auto; }
+.insights-modal .insight-tile-badge .ui-icon { width: 19px; height: 19px; }
+.insights-modal .tile-badge-green { background: var(--green-bg); color: var(--green); }
+.insights-modal .tile-badge-pink { background: var(--pink-bg); color: var(--pink); }
+.insights-modal .insight-tile-name { font-size: 13px; font-weight: 600; color: #fff; margin: 8px 0 2px; }
+.insights-modal .insight-tile-sub { font-size: 13px; color: rgba(255, 255, 255, 0.4); margin: 6px 0 0; line-height: 1.35; }
+.insights-modal .insight-tile-value { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin: auto 0 0; text-align: right; color: #fff; font-variant-numeric: tabular-nums; }
+.insights-modal .insight-tile-value.sm { font-size: 24px; }
+.insights-modal .insight-tile.center .insight-tile-value { text-align: center; margin-top: 0; }
+.insights-modal .insight-tile-value.pos { color: var(--green); }
+.insights-modal .insight-tile-value.neg { color: #e8843f; }
+
+/* --- Архив по мокапу --- */
+#archiveScreen .archive-record { flex-wrap: wrap; }
+#archiveScreen .archive-badge { width: 36px; height: 36px; border-radius: 11px; font-size: 16px; }
+#archiveScreen .archive-badge .ui-icon { width: 16px; height: 16px; }
+#archiveScreen .archive-name { font-size: 14px; }
+#archiveScreen .archive-record .amount { font-size: 14px; }
+#archiveScreen .archive-record .record-actions { flex-basis: 100%; }
+#archiveScreen .archive-record .record-actions button .ti { width: 15px; height: 15px; }
+#archiveScreen .archive-closed { opacity: 0.7; }
+#archiveScreen .archive-chev { width: 15px; height: 15px; color: rgba(255, 255, 255, 0.3); flex-shrink: 0; }
+#archiveScreen #archiveClosedTitle { margin-top: 12px; }
+#archiveScreen #archiveClosedList .archive-record:last-child { margin-bottom: 0; }

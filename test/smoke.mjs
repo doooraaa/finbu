@@ -171,10 +171,9 @@ async function fire(label, action, extra = {}, hostDataset = null) {
 for (const s of ['dashboard', 'incomes', 'expenses', 'categories', 'credits', 'recurring', 'calendar', 'goals', 'analytics', 'archive', 'reminders', 'settings', 'more']) {
   await fire(`show-screen:${s}`, 'show-screen', { screen: s });
 }
-await fire('stats:insights', 'stats-tab', { tab: 'insights' });
-await fire('stats:operations', 'stats-tab', { tab: 'operations' });
 await fire('dash-owner', 'dash-owner', { owner: 'user-danil' });
 await fire('show-insights', 'show-insights');
+await fire('close-insights', 'close-insights');
 await fire('cycle-theme', 'cycle-theme');
 await fire('open-bank-picker', 'open-bank-picker');
 await fire('close-bank-picker', 'close-bank-picker');
