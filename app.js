@@ -3691,6 +3691,12 @@ async function refreshDashboardSummary() {
   if (incomeEl) incomeEl.textContent = formatRub(summary.income);
   if (expenseEl) expenseEl.textContent = formatRub(summary.expense);
   if (freeEl) freeEl.textContent = formatRub(summary.free);
+
+  const periodLabelEl = document.querySelector('[data-period-label]');
+  const activePeriodButton = document.querySelector('#dashboardScreen .date-range button.is-active');
+  if (periodLabelEl && activePeriodButton) {
+    periodLabelEl.textContent = activePeriodButton.textContent.trim().toLowerCase();
+  }
 }
 
 /** Рендерит блок «Последние операции» на Главной из реальных данных IndexedDB. */
