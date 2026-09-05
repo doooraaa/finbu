@@ -44,6 +44,7 @@ const rangeCalendarTitle = document.querySelector('#rangeCalendarTitle');
 const rangeCalendarDays = document.querySelector('#rangeCalendarDays');
 const pageRangeCalendars = document.querySelectorAll('[data-page-range-calendar]');
 const categoryNameInput = document.querySelector('#categoryNameInput');
+const categoryOwnerSelect = document.querySelector('#categoryOwnerSelect');
 const parentCategorySelect = document.querySelector('#parentCategorySelect');
 const categoryIconPicker = document.querySelector('#categoryIconPicker');
 const categoryIconValue = document.querySelector('#categoryIconValue');
@@ -1404,8 +1405,14 @@ function setCategoryMode(mode) {
     input.checked = input.closest('[data-mode]')?.dataset.mode === mode;
   });
   parentCategorySelect.closest('.field').hidden = mode !== 'subcategory';
+  const ownerBlock = document.querySelector('#categoryOwnerBlock');
+  if (ownerBlock) ownerBlock.hidden = mode !== 'category';
   editingCategoryCard = null;
   categoryNameInput.value = mode === 'subcategory' ? 'Новая подкатегория' : 'Новая категория';
+  if (categoryOwnerSelect && mode === 'category') {
+    categoryOwnerSelect.value = 'all';
+    syncPillGroup('categoryOwnerSelect');
+  }
   setCategoryIconChoice(mode === 'subcategory' ? '🗂️' : '💸');
   setCategoryStatus(mode === 'subcategory' ? 'Создание подкатегории' : 'Создание категории');
 }
@@ -1414,12 +1421,17 @@ function getCategoryMode() {
   return document.querySelector('[name="categoryMode"]:checked')?.closest('[data-mode]')?.dataset.mode || 'category';
 }
 
+function selectedCategoryOwner() {
+  const value = categoryOwnerSelect?.value;
+  return value && value !== 'all' ? value : undefined;
+}
+
 async function saveNewCategory(name) {
   const activeTab = document.querySelector('[data-action="category-tab"] input:checked')?.closest('[data-action]')?.dataset.tab;
   const type = pendingCategoryType || (activeTab === 'expense' ? 'expense' : 'income');
   const icon = categoryEmoji(categoryIconValue?.value || '💸', name);
   const tone = categoryColorSelect?.value || 'violet';
-  await db.put('categories', { name, type, icon, tone });
+  await db.put('categories', { name, type, icon, tone, userId: selectedCategoryOwner() });
   await renderCategoriesScreen();
   setCategoryStatus(`Категория «${name}» создана`);
 }
@@ -1429,7 +1441,7 @@ async function saveEditedCategory(categoryId, name) {
   if (!existing) return;
   const icon = categoryEmoji(categoryIconValue?.value || existing.icon, name);
   const tone = categoryColorSelect?.value || existing.tone;
-  await db.put('categories', { ...existing, name, icon, tone });
+  await db.put('categories', { ...existing, name, icon, tone, userId: selectedCategoryOwner() });
   await renderCategoriesScreen();
   setCategoryStatus(`Категория «${name}» обновлена`);
 }
@@ -1508,8 +1520,10 @@ async function removeCategoryFromDb(categoryId, name) {
     await atomicStore.remove('categories', categoryId);
   });
   await Promise.all([renderCategoriesScreen(), renderRecurringScreen(), populateRecurringCategorySelect()]);
+  editingCategoryCard = null;
   categoryNameInput.value = 'Новая категория';
   setCategoryStatus(`Категория «${name}» удалена`);
+  closeEditorModal({ saved: true });
 }
 
 async function requestCategoryDelete(card) {
@@ -1547,8 +1561,10 @@ async function requestSubcategoryDelete(row) {
         }
         await atomicStore.remove('subcategories', subcategoryId);
       });
+      editingSubcategoryRow = null;
       await renderCategoriesScreen();
       setCategoryStatus(`Подкатегория «${name}» удалена`);
+      closeEditorModal({ saved: true });
     },
   });
 }
@@ -4039,6 +4055,17 @@ async function renderOwnerControls() {
   pillNames('creditOwnerSelect');
   pillNames('recurringOwnerSelect');
   pillNames('reminderAssigneeSelect', [['both', 'Оба']]);
+  const categoryOwnerGroup = document.querySelector('[data-pill-group="categoryOwnerSelect"]');
+  if (categoryOwnerSelect && categoryOwnerGroup) {
+    const currentOwner = categoryOwnerSelect.value || 'all';
+    categoryOwnerSelect.innerHTML = `<option value="all">Общая</option>${optionMarkup}`;
+    const validOwners = ['all', ...users.map((user) => user.id)];
+    categoryOwnerSelect.value = validOwners.includes(currentOwner) ? currentOwner : 'all';
+    refreshCustomSelectOptions(categoryOwnerSelect);
+    categoryOwnerGroup.innerHTML = [['all', 'Общая'], ...users.map((user) => [user.id, user.name])]
+      .map(([value, name]) => `<button type="button" class="owner-pill" data-action="pill-select" data-select="categoryOwnerSelect" data-value="${value}"><svg class="ti pill-check" hidden><use href="#i-check"/></svg><span>${escapeHtml(name)}</span></button>`)
+      .join('');
+  }
   syncAllPillGroups();
 
   const reminderSelect = document.querySelector('#reminderAssigneeSelect');
@@ -4163,6 +4190,15 @@ async function renderTransactionScreen(type) {
   renderFunctionalIcons(document.body);
 }
 
+function pluralizeSubcategories(count) {
+  if (count === 0) return 'Без подкатегорий';
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod10 === 1 && mod100 !== 11) return `${count} подкатегория`;
+  if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) return `${count} подкатегории`;
+  return `${count} подкатегорий`;
+}
+
 function pluralizeOperations(count) {
   const mod10 = count % 10;
   const mod100 = count % 100;
@@ -4242,6 +4278,9 @@ async function renderCategoriesScreen() {
       continue;
     }
 
+    const users = await db.getAll('users');
+    const ownerName = (id) => users.find((u) => u.id === id)?.name;
+
     categoriesOfType
       .slice()
       .sort((a, b) => (breakdown.find((r) => r.categoryId === b.id)?.amount ?? 0) - (breakdown.find((r) => r.categoryId === a.id)?.amount ?? 0))
@@ -4250,6 +4289,12 @@ async function renderCategoriesScreen() {
         const amount = row?.amount ?? 0;
         const count = row?.count ?? 0;
         const percent = row?.percent ?? 0;
+        const hex = TONE_HEX[category.tone] || TONE_HEX.teal;
+        const bg = TONE_BG[category.tone] || TONE_BG.teal;
+        const scopeName = ownerName(category.userId);
+        const scope = scopeName
+          ? `· ${ownerMarkup(escapeHtml(scopeName), category.userId)}`
+          : '· Общая';
 
         const subcategoriesForCategory = allSubcategories.filter((s) => s.categoryId === category.id);
         const subRows = subcategoriesForCategory.map((sub) => {
@@ -4260,33 +4305,30 @@ async function renderCategoriesScreen() {
         });
 
         const card = document.createElement('div');
-        card.className = 'category-card';
+        card.className = 'card category-card';
         card.dataset.categoryId = category.id;
         card.dataset.categoryName = category.name;
-        card.dataset.categoryIcon = categoryEmoji(category, category.name);
+        card.dataset.categoryIcon = category.icon || category.name;
         card.innerHTML = `
-          <span class="category-icon ${category.tone}"></span>
-          <button class="category-summary" type="button" data-action="toggle-category" aria-expanded="false"><b>${escapeHtml(category.name)}</b><small>${count} ${pluralizeOperations(count)} · ${percent}%</small></button>
-          <strong>${formatRub(amount)}</strong>
-          <span class="meter${type === 'expense' ? ' rose-meter' : ''}"><i style="width:${percent}%"></i></span>
-          <div class="record-actions category-actions">
-            <button type="button" data-action="edit-category" aria-label="Редактировать">✎</button>
-            <button type="button" data-action="delete-category" aria-label="Удалить">×</button>
+          <div class="row category-head" data-action="toggle-category" role="button" tabindex="0" aria-expanded="false">
+            <div class="badge" style="background:${bg};color:${hex}">${categoryIcon(category.icon, category.name)}</div>
+            <div class="row-1">
+              <p class="name"><button type="button" class="name-edit" data-action="edit-category">${escapeHtml(category.name)}</button> <span class="cat-scope">${scope}</span></p>
+              <p class="meta">${pluralizeSubcategories(subcategoriesForCategory.length)}</p>
+              <p class="meta">${count} ${pluralizeOperations(count)}</p>
+            </div>
+            <p class="amount">${formatRub(amount)}</p>
           </div>
+          <div class="progress"><div class="progress-fill" style="width:${percent}%;background:${hex}"></div></div>
+          <div class="subcategory-list" hidden>${subRows
+            .map(
+              ({ sub, amount: subAmount }) => `
+            <div class="sub-row" data-subcategory-id="${sub.id}" data-action="edit-subcategory" role="button" tabindex="0" title="Нажмите, чтобы изменить"><span>${escapeHtml(sub.name)}</span><span>${formatRub(subAmount)}</span></div>
+          `
+            )
+            .join('')}</div>
         `;
         panel.append(card);
-
-        const subList = document.createElement('div');
-        subList.className = 'subcategory-list';
-        subList.hidden = true;
-        subList.innerHTML = subRows
-          .map(
-            ({ sub, amount: subAmount }) => `
-          <div data-subcategory-id="${sub.id}"><span>${escapeHtml(sub.name)}</span><b>${formatRub(subAmount)}</b><button type="button" data-action="edit-subcategory">✎</button><button type="button" data-action="delete-subcategory">×</button></div>
-        `
-          )
-          .join('');
-        panel.append(subList);
       });
   }
 
@@ -4662,9 +4704,10 @@ document.addEventListener('click', async (event) => {
   }
   if (action === 'toggle-category') {
     const card = control.closest('.category-card');
+    if (!card) return;
     selectCategoryCard(card);
-    const subcategories = card.nextElementSibling;
-    if (subcategories?.classList.contains('subcategory-list')) {
+    const subcategories = card.querySelector('.subcategory-list');
+    if (subcategories) {
       subcategories.hidden = !subcategories.hidden;
       card.classList.toggle('is-open', !subcategories.hidden);
       control.setAttribute('aria-expanded', String(!subcategories.hidden));
@@ -4712,10 +4755,16 @@ document.addEventListener('click', async (event) => {
   if (action === 'edit-category') {
     const activePanel = getActiveCategoryPanel();
     const card = control.closest('.category-card') || activePanel?.querySelector('.category-card.is-selected');
+    setCategoryMode('category');
     if (card) {
       editingCategoryCard = card;
       editingSubcategoryRow = null;
       selectCategoryCard(card);
+      const stored = await db.getById('categories', card.dataset.categoryId);
+      if (categoryOwnerSelect) {
+        categoryOwnerSelect.value = stored?.userId || 'all';
+        syncPillGroup('categoryOwnerSelect');
+      }
       openEditorById('categoryEditor', { mode: 'edit', source: card });
     }
     setCategoryStatus(card ? `Редактирование “${categoryNameInput.value}”` : 'Выберите категорию для редактирования');
@@ -4731,6 +4780,10 @@ document.addEventListener('click', async (event) => {
     setCategoryStatus(`Редактирование подкатегории “${categoryNameInput.value}”`);
   }
   if (action === 'delete-category') {
+    if (getCategoryMode() === 'subcategory' && editingSubcategoryRow) {
+      requestSubcategoryDelete(editingSubcategoryRow);
+      return;
+    }
     const activePanel = getActiveCategoryPanel();
     const card = control.closest('.category-card') || activePanel?.querySelector('.category-card.is-selected');
     requestCategoryDelete(card);

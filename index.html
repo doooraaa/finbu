@@ -292,6 +292,11 @@
             <button type="button" data-action="category-type" data-type="income"><svg class="ti"><use href="#i-arrow-down-left"/></svg>Доход</button>
             <button type="button" class="is-active" data-action="category-type" data-type="expense"><svg class="ti"><use href="#i-arrow-up-right"/></svg>Расход</button>
           </div>
+          <div id="categoryOwnerBlock">
+            <p class="title-sm">Владелец</p>
+            <div class="owner-pills" data-pill-group="categoryOwnerSelect"></div>
+            <select id="categoryOwnerSelect" hidden><option value="all">Общая</option></select>
+          </div>
           <p class="title-sm">Предложения</p>
           <div class="suggest-row" id="categoryIconSuggest">
             <button type="button" data-action="select-category-icon" data-icon="🛋️" aria-label="Кресло"><svg class="ti"><use href="#i-armchair"/></svg></button>

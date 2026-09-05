@@ -442,7 +442,7 @@ export async function seedIfEmpty() {
     { id: 'cat-freelance', name: 'Фриланс', type: 'income', tone: 'teal', icon: 'laptop' },
     { id: 'cat-gifts-in', name: 'Подарки', type: 'income', tone: 'violet', icon: 'gift' },
     { id: 'cat-food', name: 'Еда', type: 'expense', tone: 'rose', icon: 'kitchen' },
-    { id: 'cat-transport', name: 'Транспорт', type: 'expense', tone: 'amber', icon: 'car' },
+    { id: 'cat-transport', name: 'Транспорт', type: 'expense', tone: 'amber', icon: 'car', userId: 'user-danil' },
     { id: 'cat-home', name: 'Дом', type: 'expense', tone: 'violet', icon: 'home' },
     { id: 'cat-health', name: 'Здоровье', type: 'expense', tone: 'teal', icon: 'pill' },
   ];

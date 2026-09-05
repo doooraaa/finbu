@@ -150,7 +150,7 @@ function clickEvent(control, host = null) {
   return {
     target: { closest: (sel) => {
       if (sel === '[data-action]') return control;
-      if (host && (sel === '.finance-card, .goal-card' || sel === '.finance-card, .goal-card, .category-card')) return host;
+      if (host && (sel === '.finance-card, .goal-card' || sel === '.finance-card, .goal-card, .category-card' || sel === '.category-card' || sel === '.subcategory-list div')) return host;
       return null;
     } },
     preventDefault() {},
@@ -204,6 +204,11 @@ await fire('export-csv', 'export-csv');
 for (const a of ['ob-next', 'ob-register', 'ob-mode', 'ob-mode-next', 'ob-copy', 'ob-share', 'ob-join-open', 'ob-join-show', 'ob-finish']) {
   await fire(a, a);
 }
+await fire('category-tab:income', 'category-tab', { tab: 'income' });
+await fire('category-tab:expense', 'category-tab', { tab: 'expense' });
+await fire('toggle-category', 'toggle-category', {}, { categoryId: 'cat-food' });
+await fire('edit-category', 'edit-category', {}, { categoryId: 'cat-food' });
+await fire('edit-subcategory', 'edit-subcategory');
 await fire('bank-add-hint', 'bank-add-hint');
 await fire('select-period', 'select-period', { period: '7d' });
 await fire('cycle-owner-filter:income', 'cycle-owner-filter', { scope: 'income' });
