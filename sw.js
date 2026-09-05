@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fambu-shell-v106';
+const CACHE_NAME = 'finbu-shell-v107';
 const ASSETS = [
   './',
   './index.html',
