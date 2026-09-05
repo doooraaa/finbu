@@ -5397,3 +5397,48 @@ button.pill { border: 0; font-family: inherit; cursor: pointer; }
 .bank-badge { width: 38px; height: 38px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; background: var(--bank-badge-bg, rgba(255,255,255,.07)); color: var(--bank-badge-fg, #fff); overflow: hidden; flex: none; }
 .bank-badge img { width: 100%; height: 100%; object-fit: cover; }
 .kebab-item .ui-icon { width: 18px; height: 18px; }
+
+/* --- Предстоящие: точные метрики мокапа --- */
+#recurringScreen .title { font-size: 24px; margin: 0 0 16px; }
+#recurringScreen .mini-stats { margin-bottom: 16px; }
+#recurringScreen .stat-mini { padding: 12px 14px; border-radius: 16px; }
+#recurringScreen .recurring-card { line-height: 1.3; }
+#recurringScreen .finance-main { grid-template-columns: 38px minmax(0, 1fr) auto; }
+#recurringScreen .recurring-card.flow-income .finance-main { margin-bottom: 12px; }
+
+/* --- Календарь по мокапу --- */
+#calendarScreen .calendar-top .icon-btn { background: none; width: 28px; height: 28px; color: var(--text-secondary); }
+#calendarScreen .calendar-top .icon-btn .ti { width: 18px; height: 18px; }
+#calendarScreen .planner-card { background: none; border: none; box-shadow: none; padding: 0; display: block; }
+#calendarScreen .planner-grid { gap: 6px; }
+#calendarScreen .planner-weekdays span { font-size: 10px; }
+#calendarScreen .planner-day { min-height: 0; aspect-ratio: 1; padding: 0; border: none; border-radius: 8px; background: transparent; font-size: 12px; color: #fff; display: flex; align-items: center; justify-content: center; }
+#calendarScreen .planner-day b { font-weight: 400; }
+#calendarScreen .planner-day.has-expense { background: var(--red-bg); }
+#calendarScreen .planner-day.has-income { background: var(--green-bg); }
+#calendarScreen .planner-day.is-muted { opacity: 1; color: rgba(255, 255, 255, 0.3); background: transparent; }
+#calendarScreen .planner-day.is-today { background: var(--yellow); color: #412402; font-weight: 500; }
+#calendarScreen .planner-day.is-today b { font-weight: 500; }
+#calendarScreen .planner-day.is-today b::after { display: none; }
+#calendarScreen .planner-day:hover { transform: none; background-color: rgba(255, 255, 255, 0.07); }
+#calendarScreen .planner-day.has-expense:hover { background-color: var(--red-bg); }
+#calendarScreen .planner-day.has-income:hover { background-color: var(--green-bg); }
+#calendarScreen .planner-day.is-today:hover { background-color: var(--yellow); }
+#calendarScreen .planner-day.is-muted:hover { background-color: transparent; }
+#calendarScreen .planner-day.is-selected { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.45); background-color: rgba(255, 255, 255, 0.07); }
+#calendarScreen .planner-day.has-expense.is-selected { background-color: var(--red-bg); }
+#calendarScreen .planner-day.has-income.is-selected { background-color: var(--green-bg); }
+#calendarScreen .planner-day.is-today.is-selected { background-color: var(--yellow); }
+#calendarScreen .day-events { background: none; border: none; box-shadow: none; padding: 0; position: static; }
+#calendarScreen .day-events .between { margin-bottom: 4px; }
+
+/* --- Цели по мокапу --- */
+#goalsScreen .title { font-size: 24px; margin: 0 0 16px; }
+#goalsScreen .goal-grid { grid-template-columns: 1fr; gap: 12px; }
+#goalsScreen .goal-card { margin-bottom: 0; gap: 0; line-height: 1.3; }
+#goalsScreen .goal-main { grid-template-columns: 36px minmax(0, 1fr) auto; margin-bottom: 12px; }
+#goalsScreen .goal-card .badge { width: 36px; height: 36px; border-radius: 12px; font-size: 17px; }
+#goalsScreen .goal-card .name { font-size: 14px; }
+#goalsScreen .goal-card .amount { font-size: 14px; }
+#goalsScreen .goal-card .progress { margin: 0; }
+#goalsScreen > .btn-ghost.dashed { margin-bottom: 0; }

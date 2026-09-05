@@ -1674,6 +1674,7 @@ async function renderGoalsScreen() {
 
   goals.forEach((goal) => {
     const percent = goal.targetAmount > 0 ? Math.min(100, Math.round((goal.savedAmount / goal.targetAmount) * 100)) : 0;
+    const goalColor = TONE_HEX[goal.tone] || TONE_HEX.violet;
     const card = document.createElement('article');
     card.className = 'card-lg goal-card';
     card.dataset.removable = '';
@@ -1682,9 +1683,9 @@ async function renderGoalsScreen() {
       <button class="finance-main goal-main" type="button" data-action="open-history">
         <span class="badge" style="background:${TONE_BG[goal.tone] || TONE_BG.violet};color:${TONE_HEX[goal.tone] || TONE_HEX.violet}">${icon(goal.icon && iconPaths[goal.icon] ? goal.icon : 'target', 'ui-icon')}</span>
         <div class="row-1"><p class="name">${escapeHtml(goal.title)}</p><p class="meta">${formatRub(goal.savedAmount)} из ${formatRub(goal.targetAmount)} · <span>Общая</span></p></div>
-        <p class="amount">${percent}%</p>
+        <p class="amount" style="color:${goalColor}">${percent}%</p>
       </button>
-      <div class="progress"><div class="progress-fill" style="width:${percent}%"></div></div>
+      <div class="progress"><div class="progress-fill" style="width:${percent}%;background:${goalColor}"></div></div>
     `;
     list.append(card);
   });
@@ -3304,9 +3305,10 @@ async function renderPlannerCalendar() {
     const isSelected = iso === selectedPlannerDate;
     const isToday = iso === todayIso;
     const dayEvents = eventsByDate.get(iso) || [];
-    const uniqueColors = [...new Set(dayEvents.map((e) => e.color))];
+    const dayColors = dayEvents.map((e) => e.color);
+    const dayTint = isMuted || dayColors.length === 0 ? '' : (dayColors.some((c) => c !== 'green') ? ' has-expense' : ' has-income');
     const title = `${date.getDate()} ${monthNames[date.getMonth()]}`;
-    html += `<button class="planner-day${isMuted ? ' is-muted' : ''}${isSelected ? ' is-selected' : ''}${isToday ? ' is-today' : ''}" type="button" data-action="select-planner-day" data-date="${iso}" data-title="${title}"><b>${date.getDate()}</b>${uniqueColors.map((c) => `<i class="event-dot ${c}"></i>`).join('')}</button>`;
+    html += `<button class="planner-day${isMuted ? ' is-muted' : ''}${isSelected ? ' is-selected' : ''}${isToday ? ' is-today' : ''}${dayTint}" type="button" data-action="select-planner-day" data-date="${iso}" data-title="${title}"><b>${date.getDate()}</b></button>`;
   }
   grid.innerHTML = html;
 }
@@ -4431,7 +4433,7 @@ document.addEventListener('click', async (event) => {
   }
   if (action === 'select-calendar-event-filter') {
     selectedPlannerFilter = control.dataset.value;
-    calendarEventFilterValue.textContent = selectedPlannerFilter;
+    if (calendarEventFilterValue) calendarEventFilterValue.textContent = selectedPlannerFilter;
     closeChoiceMenus();
     renderPlannerEvents();
   }

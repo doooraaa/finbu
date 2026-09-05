@@ -507,25 +507,8 @@
           <h1 class="title" id="calendarTitlePage"><span id="plannerMonthTitle">Август 2026</span></h1>
           <button class="icon-btn" type="button" data-action="planner-next" aria-label="Следующий месяц"><svg class="ti"><use href="#i-chev-r"/></svg></button>
         </div>
-        <div class="calendar-tools">
-          <div class="field choice-field calendar-event-filter">
-            <button class="choice-control" type="button" data-action="toggle-choice" aria-haspopup="listbox" aria-expanded="false">
-              <b id="calendarEventFilterValue">Все события</b>
-              <svg class="ti"><use href="#i-chev-d"/></svg>
-            </button>
-            <div class="choice-menu" role="listbox" hidden>
-              <button type="button" data-action="select-calendar-event-filter" data-value="Все события">Все события</button>
-              <button type="button" data-action="select-calendar-event-filter" data-value="Доход">Доход</button>
-              <button type="button" data-action="select-calendar-event-filter" data-value="Расход">Расход</button>
-              <button type="button" data-action="select-calendar-event-filter" data-value="Кредит">Кредит</button>
-              <button type="button" data-action="select-calendar-event-filter" data-value="Обязательный платеж">Обязательный платеж</button>
-              <button type="button" data-action="select-calendar-event-filter" data-value="Цель">Цель</button>
-            </div>
-          </div>
-        </div>
-
         <section class="calendar-layout">
-          <article class="card planner-card">
+          <article class="planner-card">
             <div class="calendar-weekdays planner-weekdays"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span></div>
             <div class="planner-grid" id="plannerGrid"></div>
             <div class="calendar-legend">
