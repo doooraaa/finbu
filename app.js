@@ -3490,6 +3490,7 @@ function formatRelativeShortDate(isoDate) {
 }
 
 let currentPeriod = 'thisMonth';
+let currentDashboardUser = '';
 
 function getPeriodRange(period, base = new Date()) {
   const pad = (n) => String(n).padStart(2, '0');
@@ -3552,6 +3553,15 @@ async function setPeriod(period) {
     renderPlannerCalendar(),
     renderPlannerEvents(),
   ]);
+}
+
+/** Фильтр Главной по участнику семьи — «Все / Данил / Юля»: сводка, ближайшие платежи и последние операции. */
+async function setDashboardUser(userId) {
+  currentDashboardUser = userId || '';
+  document.querySelectorAll('.person-filter button').forEach((button) => {
+    button.classList.toggle('is-active', (button.dataset.userId || '') === currentDashboardUser);
+  });
+  await refreshDashboard();
 }
 
 /** Применяет выбранный в календаре произвольный диапазон дат как активный период — везде. */
@@ -3681,7 +3691,7 @@ async function saveOperation() {
 /** Перечитывает баланс/доходы/расходы из БД и обновляет карточки на Главной. */
 async function refreshDashboardSummary() {
   const { from, to } = getPeriodRange(currentPeriod);
-  const summary = await db.getSummary({ from, to });
+  const summary = await db.getSummary({ from, to, userId: currentDashboardUser || undefined });
 
   const balanceEl = document.querySelector('[data-summary="balance"]');
   const incomeEl = document.querySelector('[data-summary="income"]');
@@ -3705,7 +3715,7 @@ async function renderRecentOperations(limit = 3) {
   if (!card) return;
 
   const [transactions, categories, users] = await Promise.all([
-    db.listTransactions(),
+    db.listTransactions({ userId: currentDashboardUser || undefined }),
     db.getAll('categories'),
     db.getAll('users'),
   ]);
@@ -3780,6 +3790,7 @@ async function renderUpcomingPayments() {
     ...creditCards.filter((c) => c.debt > 0).map((c) => ({ title: c.title, amount: remainingDebtPayment(c, 'card'), date: c.nextDate, owner: c.userId })),
   ]
     .filter((item) => item.date >= todayIso && item.date <= in14Days)
+    .filter((item) => !currentDashboardUser || item.owner === currentDashboardUser)
     .sort((a, b) => a.date.localeCompare(b.date));
 
   const users = await db.getAll('users');
@@ -4563,6 +4574,7 @@ document.addEventListener('click', async (event) => {
     if (userId) openUserEditor(userId);
   }
   if (action === 'select-period') setPeriod(control.dataset.period);
+  if (action === 'select-dashboard-user') setDashboardUser(control.dataset.userId);
   if (action === 'category-tab') {
     control.querySelector('input').checked = true;
     document.querySelectorAll('[data-category-panel]').forEach((panel) => {

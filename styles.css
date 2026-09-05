@@ -277,6 +277,39 @@ select option {
 }
 
 /* Главная — единый акцентный номер + пилюли вместо плоской сетки карточек, как в макете */
+.person-filter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin: 18px auto 0;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--pill);
+}
+
+.person-filter button {
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.person-filter button.person-filter-danil {
+  color: var(--violet);
+}
+
+.person-filter button.person-filter-yulya {
+  color: var(--teal);
+}
+
+.person-filter button.is-active {
+  background: var(--pill-active);
+  color: #fff;
+  font-weight: 500;
+}
+
 .hero-summary {
   display: flex;
   flex-direction: column;
@@ -293,6 +326,7 @@ select option {
 }
 
 .hero-summary-label b {
+  margin-left: 4px;
   color: #fff;
   font-weight: 500;
 }
@@ -339,6 +373,10 @@ select option {
 
 .hero-pill-rose {
   color: var(--rose);
+}
+
+.hero-pill-violet {
+  color: var(--violet);
 }
 
 .eyebrow {
