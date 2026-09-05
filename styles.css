@@ -19,12 +19,28 @@
   --blue: #5d96ec;
   --rose: #f0997b;
   --amber: #fac775;
+  --red: #f09595;
+  --pink: #d4537e;
+
+  /* Пастельные фоны бейджей/иконок — 1:1 с finance-app-mockups.html */
+  --green-bg: rgba(93, 202, 165, 0.15);
+  --coral-bg: rgba(240, 153, 123, 0.15);
+  --rose-bg: rgba(240, 153, 123, 0.15);
+  --yellow-bg: rgba(250, 199, 117, 0.15);
+  --amber-bg: rgba(250, 199, 117, 0.15);
+  --purple-bg: rgba(175, 169, 236, 0.15);
+  --violet-bg: rgba(175, 169, 236, 0.15);
+  --pink-bg: rgba(212, 83, 126, 0.15);
+  --red-bg: rgba(240, 149, 149, 0.12);
+  --blue-bg: rgba(93, 150, 236, 0.15);
+
   --pill: rgba(255, 255, 255, 0.08);
   --pill-active: rgba(255, 255, 255, 0.14);
   --name-danil: rgba(175, 169, 236, 0.75);
   --name-yulya: rgba(93, 202, 165, 0.75);
-  --radius-item: 16px;
-  --radius-control: 18px;
+  --radius-item: 20px;
+  --radius-item-lg: 22px;
+  --radius-control: 20px;
   --radius-surface: 26px;
   --space-xs: 8px;
   --space-sm: 12px;
@@ -287,7 +303,7 @@ select option {
   padding: 12px 17px;
   background: #f1efe8;
   color: #2c2c2a;
-  font-weight: 650;
+  font-weight: 500;
   box-shadow: none;
   white-space: nowrap;
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
@@ -334,7 +350,7 @@ select option {
 .card {
   padding: var(--space-lg);
   border: none;
-  border-radius: var(--radius-surface);
+  border-radius: var(--radius-item);
   background: var(--card);
   box-shadow: none;
 }
@@ -347,7 +363,7 @@ select option {
 .value {
   margin: 12px 0 2px;
   font-size: 29px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums;
 }
@@ -368,8 +384,7 @@ select option {
   vertical-align: middle;
 }
 
-.value-percent {
-  display: inline-flex;
+.value-percent {  display: inline-flex;
   align-items: center;
   min-height: 24px;
   margin-left: 8px;
@@ -389,9 +404,9 @@ select option {
   align-items: center;
   width: fit-content;
   padding: 4px 9px;
-  border: 1px solid var(--line);
+  border: none;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.055);
+  background: var(--pill);
   color: var(--violet-light);
   font-size: 11px;
   white-space: nowrap;
@@ -454,7 +469,7 @@ select option {
   background: var(--pill);
   color: var(--text-secondary);
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 400;
   scroll-snap-align: start;
   white-space: nowrap;
   transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
@@ -463,6 +478,7 @@ select option {
 .date-range button.is-active {
   background: var(--pill-active);
   color: #fff;
+  font-weight: 500;
   box-shadow: none;
 }
 
@@ -496,58 +512,6 @@ select option {
   background: rgba(255, 255, 255, 0.07);
   transform: translateY(-2px);
 }
-
-.hero-balance-label {
-  text-align: center;
-  margin-top: 18px;
-}
-
-.hero-balance-label .pill {
-  display: inline-block;
-  padding: 7px 16px;
-}
-
-.hero-balance-label b {
-  color: #fff;
-  font-weight: 500;
-}
-
-.hero-balance {
-  margin: 14px 0;
-  text-align: center;
-  font-size: 44px;
-  font-weight: 500;
-  color: #fff;
-  font-variant-numeric: tabular-nums;
-}
-
-.hero-chips {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.hero-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 20px;
-  background: var(--pill);
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.hero-chip .ui-icon {
-  width: 14px;
-  height: 14px;
-}
-
-.hero-chip.green { color: var(--green); }
-.hero-chip.rose { color: var(--rose); }
-.hero-chip.violet { color: var(--violet); }
 
 .dash-grid {
   display: grid;
@@ -758,6 +722,11 @@ select option {
   margin-top: 0;
 }
 
+/* В макете расходы — нейтральный белый текст, коралловым выделяются только категории/долги */
+.page-stats .value.rose {
+  color: var(--text);
+}
+
 .muted {
   color: var(--muted);
   font-size: 12px;
@@ -830,8 +799,8 @@ select option {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 6px 10px;
   margin-top: 8px;
-  padding: 10px 12px;
-  border-radius: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-item);
   background: rgba(255, 255, 255, 0.05);
   transition: background 0.18s ease, transform 0.18s ease;
 }
@@ -852,10 +821,11 @@ select option {
 .record b {
   min-width: 0;
   overflow: hidden;
-  color: var(--text-tertiary);
+  color: var(--text);
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .category-row small,
@@ -868,6 +838,7 @@ select option {
 .record strong {
   color: var(--text);
   font-variant-numeric: tabular-nums;
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -924,7 +895,7 @@ select option {
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 11px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.055);
   color: var(--text-secondary);
   font-size: 16px;
@@ -989,21 +960,25 @@ select option {
 .ui-state {
   display: grid;
   place-items: center;
-  gap: 4px;
+  gap: 6px;
   margin-top: 12px;
-  padding: 22px 18px;
-  border: 1px dashed rgba(255, 255, 255, 0.16);
+  padding: 48px 18px;
+  border: none;
   border-radius: 16px;
-  background:
-    linear-gradient(135deg, rgba(175, 169, 236, 0.06), transparent),
-    rgba(255, 255, 255, 0.035);
+  background: transparent;
   color: #dbe4f0;
   text-align: center;
+}
+
+.ui-state b {
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .ui-state small {
   max-width: 360px;
   color: var(--muted);
+  line-height: 1.5;
 }
 
 .category-panels {
@@ -1083,13 +1058,21 @@ select option {
   place-items: center;
   width: 38px;
   height: 38px;
-  border-radius: 14px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.06);
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
   font-size: 20px;
   font-weight: 700;
   line-height: 1;
 }
+
+/* Пастельный фон по тону категории — 1:1 со «Справочником: категория → иконка → цвет» из макета */
+.category-icon.violet { background: var(--purple-bg); }
+.category-icon.teal { background: var(--green-bg); }
+.category-icon.green { background: var(--green-bg); }
+.category-icon.rose { background: var(--coral-bg); }
+.category-icon.amber { background: var(--yellow-bg); }
+.category-icon.blue { background: var(--blue-bg); }
 
 .icon-picker-field {
   gap: 10px;
@@ -1252,6 +1235,18 @@ select option {
 .button-stack .ghost-button {
   width: 100%;
   text-align: left;
+}
+
+.confirm-actions {
+  grid-template-columns: 1fr;
+}
+
+.confirm-actions .button,
+.confirm-actions .ghost-button {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  min-height: 52px;
 }
 
 .ghost-button.danger {
@@ -2781,7 +2776,7 @@ select option {
 }
 
 .mobilebar button:not(.mobile-add).is-active {
-  background: rgba(175, 169, 236, 0.16);
+  background: transparent;
   color: #fff;
 }
 
@@ -3005,11 +3000,10 @@ select option {
 }
 
 .danger-button {
-  border-color: rgba(240, 153, 123, 0.28);
-  background:
-    linear-gradient(135deg, rgba(240, 153, 123, 0.22), rgba(240, 153, 123, 0.16)),
-    rgba(255, 255, 255, 0.06);
+  border-color: transparent;
+  background: var(--red);
   color: #fff;
+  font-weight: 600;
 }
 
 .app-modal-warning {
@@ -3293,7 +3287,7 @@ button.is-pending::after {
   background: var(--pill);
   color: #fff;
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 500;
   transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
 
@@ -4086,7 +4080,7 @@ button.is-pending::after {
 .operation-save {
   width: 100%;
   min-height: 58px;
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   font-size: 18px;
 }
 

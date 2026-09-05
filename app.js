@@ -620,7 +620,7 @@ function openDeleteConfirm({ title = 'Удалить запись?', message = '
   const description = document.createElement('p');
   description.textContent = message;
   const actions = document.createElement('div');
-  actions.className = 'button-stack inline-buttons';
+  actions.className = 'button-stack confirm-actions';
   const cancelButton = document.createElement('button');
   cancelButton.className = 'ghost-button';
   cancelButton.type = 'button';
@@ -631,7 +631,7 @@ function openDeleteConfirm({ title = 'Удалить запись?', message = '
   deleteButton.type = 'button';
   deleteButton.dataset.action = 'confirm-delete';
   deleteButton.textContent = 'Удалить';
-  actions.append(cancelButton, deleteButton);
+  actions.append(deleteButton, cancelButton);
   confirm.append(description, actions);
   appModalBody.replaceChildren(confirm);
   appModal.hidden = false;
