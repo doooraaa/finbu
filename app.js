@@ -2193,20 +2193,25 @@ async function populateRecurringCategorySelect() {
   refreshCustomSelectOptions(select);
 }
 
-function renderDebtCard({ id, datasetKey, bankName, ownerLine, metaLine, logoIcon, debt, initialAmount, metrics, paymentKind }) {
+function renderDebtCard({ id, datasetKey, bankName, ownerLine, metaLine, logoIcon, debt, initialAmount, metrics, paymentKind, tone }) {
   const card = document.createElement('article');
   card.className = 'card-lg finance-card credit-card';
   card.dataset.removable = '';
   card.dataset[datasetKey] = id;
-  const remainPct = initialAmount > 0 ? Math.min(100, Math.round((debt / initialAmount) * 100)) : 0;
+  const remain = Math.max(0, (Number(initialAmount) || 0) - (Number(debt) || 0));
+  const remainPct = initialAmount > 0 ? Math.min(100, Math.round((remain / initialAmount) * 100)) : 0;
+  const fill = tone || 'var(--green)';
+  const topMetrics = metrics.slice(0, 2);
+  const bottomMetrics = metrics.slice(2);
   card.innerHTML = `
     <button class="finance-main debt-main" type="button" data-action="open-history">
       ${logoIcon}
       <div class="row-1"><p class="name">${escapeHtml(bankName || 'Банк')}${ownerLine ? ` <span>· ${ownerLine}</span>` : ''}</p><p class="meta">${metaLine}</p></div>
     </button>
-    <div class="debt-head"><p>${formatRub(debt)}</p><span class="pill">${remainPct}%</span></div>
-    <div class="grid-2">${metrics.map(([label, value]) => `<div><p class="meta">${label}</p><p class="name">${value}</p></div>`).join('')}</div>
-    <div class="progress"><div class="progress-fill" style="width:${remainPct}%"></div></div>
+    <div class="debt-head"><p>${formatRub(remain)}</p><span class="pill">${remainPct}%</span></div>
+    <div class="grid-2 debt-grid-top">${topMetrics.map(([label, value]) => `<div><p class="meta">${label}</p><p class="name">${value}</p></div>`).join('')}</div>
+    <div class="grid-2">${bottomMetrics.map(([label, value]) => `<div><p class="meta">${label}</p><p class="name">${value}</p></div>`).join('')}</div>
+    <div class="progress"><div class="progress-fill" style="width:${remainPct}%;background:${fill}"></div></div>
     <p class="meter-caption">Осталось выплатить ${remainPct}%</p>
   `;
   return card;
@@ -2239,14 +2244,15 @@ async function renderCreditsScreen() {
   const allPayable = [
     ...cards
       .filter((card) => Number(card.debt) > 0)
-      .map((card) => ({ amount: remainingDebtPayment(card, 'card'), date: card.nextDate, userId: card.userId })),
+      .map((card) => ({ amount: remainingDebtPayment(card, 'card'), date: card.nextDate, userId: card.userId, kind: 'card' })),
     ...loansAndInstallments
       .filter((loan) => Number(loan.debt) > 0)
-      .map((loan) => ({ amount: remainingDebtPayment(loan, 'loan'), date: loan.nextDate, userId: loan.userId })),
+      .map((loan) => ({ amount: remainingDebtPayment(loan, 'loan'), date: loan.nextDate, userId: loan.userId, kind: loan.kind === 'installment' ? 'installment' : 'loan' })),
   ]
     .filter((payment) => payment.amount > 0 && /^\d{4}-\d{2}-\d{2}$/.test(payment.date || ''))
     .sort((a, b) => a.date.localeCompare(b.date));
   const nextPayment = allPayable[0];
+  const nextPaymentKind = nextPayment?.kind === 'card' ? 'Карта' : nextPayment?.kind === 'installment' ? 'Рассрочка' : nextPayment ? 'Кредит' : '';
   const totalDebtEl = document.querySelector('[data-credits-summary="total-debt"]');
   const nextPaymentEl = document.querySelector('[data-credits-summary="next-payment"]');
   const nextPaymentMetaEl = document.querySelector('[data-credits-summary="next-payment-meta"]');
@@ -2254,7 +2260,7 @@ async function renderCreditsScreen() {
   if (nextPaymentEl) nextPaymentEl.textContent = nextPayment ? formatRub(nextPayment.amount) : '—';
   if (nextPaymentMetaEl) {
     nextPaymentMetaEl.textContent = nextPayment
-      ? `${formatRelativeShortDate(nextPayment.date)} · ${userName(nextPayment.userId)}`
+      ? `${formatRelativeShortDate(nextPayment.date)} · ${nextPaymentKind}`
       : 'Нет предстоящих платежей';
   }
 
@@ -2278,16 +2284,17 @@ async function renderCreditsScreen() {
     });
     ownerPills.innerHTML = users
       .filter((u) => (debtByOwner.get(u.id) || 0) > 0)
-      .map((u) => `<span><span class="owner-name" style="color:${OWNER_COLOR_BY_TONE[u.tone] || '#afa9ec'}">${escapeHtml(u.name)}</span><span>${formatRub(debtByOwner.get(u.id))}</span></span>`)
+      .map((u) => `<span class="owner-debt-pill"><span class="owner-name" style="color:${OWNER_COLOR_BY_TONE[u.tone] || '#afa9ec'}">${escapeHtml(u.name)}</span><span class="owner-debt-sum">${formatRub(debtByOwner.get(u.id))}</span></span>`)
       .join('');
   }
-  document.querySelector('[data-credits-count="card"]').textContent = `${cards.length} ${cards.length === 1 ? 'карта' : 'карты'}`;
-  document.querySelector('[data-credits-count="loan"]').textContent = `${loans.length} ${loans.length === 1 ? 'договор' : 'договора'}`;
-  document.querySelector('[data-credits-count="installment"]').textContent = `${installments.length} ${installments.length === 1 ? 'покупка' : 'покупки'}`;
+  document.querySelector('[data-credits-count="card"]').textContent = pluralizeCards(cards.length);
+  document.querySelector('[data-credits-count="loan"]').textContent = pluralizeLoans(loans.length);
+  document.querySelector('[data-credits-count="installment"]').textContent = String(installments.length);
+
+  const toneOf = (bankId, kind) => bankColorOf(bankId)
+    || (kind === 'card' ? '#5dcaa5' : kind === 'installment' ? '#fac775' : '#afa9ec');
 
   cards.forEach((card) => {
-    const paidAmount = Math.max(0, card.limit - card.debt);
-    const paidPercent = card.limit > 0 ? Math.round((paidAmount / card.limit) * 100) : 0;
     const el = renderDebtCard({
       id: card.id,
       datasetKey: 'creditCardId',
@@ -2295,6 +2302,7 @@ async function renderCreditsScreen() {
       ownerLine: ownerMarkup(escapeHtml(userName(card.userId)), card.userId),
       metaLine: card.cardNetwork ? `${escapeHtml(card.cardNetwork)} · льготный период ${card.gracePeriodDays || 0} дней` : `Льготный период ${card.gracePeriodDays || 0} дней`,
       logoIcon: debtBadge(bankLogoOf(card.bankId), bankName(card.bankId), bankColorOf(card.bankId)),
+      tone: toneOf(card.bankId, 'card'),
       debt: card.debt,
       initialAmount: card.limit,
       paymentKind: 'card',
@@ -2309,18 +2317,15 @@ async function renderCreditsScreen() {
   });
 
   const renderLoanLike = (item, list) => {
-    const paidAmount = Math.max(0, item.initialAmount - item.debt);
-    const paidPercent = item.initialAmount > 0 ? Math.round((paidAmount / item.initialAmount) * 100) : 0;
     const isInstallment = item.kind === 'installment';
     const el = renderDebtCard({
       id: item.id,
       datasetKey: 'loanId',
       bankName: item.title || bankName(item.bankId),
       ownerLine: ownerMarkup(escapeHtml(userName(item.userId)), item.userId),
-      metaLine: isInstallment ? `${escapeHtml(bankName(item.bankId))} · ${item.termMonths || 0} мес.` : `${escapeHtml(bankName(item.bankId))} · ${item.termMonths || 0} месяцев`,
-      logoIcon: isInstallment
-        ? `<span class="badge badge-lg t-teal">${icon('laptop', 'ui-icon')}</span>`
-        : debtBadge(bankLogoOf(item.bankId), item.title || bankName(item.bankId), bankColorOf(item.bankId)),
+      metaLine: isInstallment ? `${escapeHtml(bankName(item.bankId))} · ${item.termMonths || 0} мес.` : `${escapeHtml(bankName(item.bankId))} · ${item.termMonths || 0} ${pluralizeMonths(item.termMonths || 0)}`,
+      logoIcon: debtBadge(bankLogoOf(item.bankId), item.title || bankName(item.bankId), bankColorOf(item.bankId)),
+      tone: toneOf(item.bankId, isInstallment ? 'installment' : 'loan'),
       debt: item.debt,
       initialAmount: item.initialAmount,
       paymentKind: 'loan',
@@ -4200,6 +4205,30 @@ function pluralizeSubcategories(count) {
   if (mod10 === 1 && mod100 !== 11) return `${count} подкатегория`;
   if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) return `${count} подкатегории`;
   return `${count} подкатегорий`;
+}
+
+function pluralizeCards(count) {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod10 === 1 && mod100 !== 11) return `${count} карта`;
+  if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) return `${count} карты`;
+  return `${count} карт`;
+}
+
+function pluralizeLoans(count) {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod10 === 1 && mod100 !== 11) return `${count} договор`;
+  if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) return `${count} договора`;
+  return `${count} договоров`;
+}
+
+function pluralizeMonths(count) {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod10 === 1 && mod100 !== 11) return 'месяц';
+  if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) return 'месяца';
+  return 'месяцев';
 }
 
 function pluralizeOperations(count) {
