@@ -727,6 +727,11 @@ select option {
   color: var(--text);
 }
 
+/* Общая задолженность по кредитам — как в макете, насыщенный красный, а не коралл */
+.page-stats .value[data-credits-summary="total-debt"] {
+  color: var(--red);
+}
+
 .muted {
   color: var(--muted);
   font-size: 12px;
@@ -1000,7 +1005,7 @@ select option {
   min-width: 0;
   padding: 12px 14px;
   border: 1px solid transparent;
-  border-radius: 14px;
+  border-radius: var(--radius-item);
   background: rgba(255, 255, 255, 0.05);
   text-align: left;
 }
@@ -1026,10 +1031,11 @@ select option {
 
 .category-summary b {
   overflow: hidden;
-  color: var(--text-tertiary);
+  color: var(--text);
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .category-summary small {
@@ -1040,6 +1046,7 @@ select option {
 .category-card strong {
   color: var(--text);
   font-variant-numeric: tabular-nums;
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -1406,7 +1413,8 @@ select option {
 
 .finance-main b {
   min-width: 0;
-  color: var(--text-tertiary);
+  color: var(--text);
+  font-weight: 500;
   line-height: 1.25;
 }
 
@@ -1421,6 +1429,7 @@ select option {
   min-width: 0;
   overflow: hidden;
   color: var(--text);
+  font-weight: 500;
   text-overflow: ellipsis;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -1449,14 +1458,14 @@ select option {
   display: inline-flex;
   align-items: center;
   min-height: 22px;
-  padding: 3px 7px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 3px 10px;
+  border: none;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.055);
+  background: var(--pill);
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-style: normal;
-  font-weight: 750;
+  font-weight: 500;
   line-height: 1;
 }
 
@@ -1556,6 +1565,7 @@ select option {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 13px;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
